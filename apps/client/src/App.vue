@@ -1,7 +1,3 @@
-<script setup lang="ts">
-import GlassNavbar from './components/GlassNavbar.vue';
-</script>
-
 <template>
   <div class="app-container">
     <GlassNavbar />
@@ -10,6 +6,10 @@ import GlassNavbar from './components/GlassNavbar.vue';
     </main>
   </div>
 </template>
+
+<script setup lang="ts">
+import GlassNavbar from './components/GlassNavbar.vue';
+</script>
 
 <style>
 :root {

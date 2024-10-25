@@ -1,22 +1,19 @@
 {
-  "name": "githubrank",
-  "private": true,
-  "version": "0.0.0",
-  "type": "module",
+  "name": "githubRank",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
   "scripts": {
-    "dev": "vite",
-    "build": "vue-tsc -b && vite build",
-    "preview": "vite preview"
+    "dev:client": "cd apps/client && pnpm dev",
+    "dev:server": "cd apps/server && pnpm start:dev",
+    "dev": "pnpm run -r --parallel dev",
+    "build:client": "cd apps/client && pnpm build",
+    "build:client:ssr": "cd apps/client && pnpm build:ssr",
+    "build:server": "cd apps/server && pnpm build",
+    "build": "pnpm run build:client && pnpm run build:server",
+    "start": "pnpm run build && cd apps/server && pnpm start"
   },
-  "dependencies": {
-    "axios": "^1.7.7",
-    "vue": "^3.5.12",
-    "vue-router": "^4.4.5"
-  },
-  "devDependencies": {
-    "@vitejs/plugin-vue": "^5.1.4",
-    "typescript": "~5.6.2",
-    "vite": "^5.4.9",
-    "vue-tsc": "^2.1.6"
-  }
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
 }

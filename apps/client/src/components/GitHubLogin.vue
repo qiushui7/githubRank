@@ -5,8 +5,8 @@
 </template>
 
 <script setup lang="ts">
-const clientId = 'Ov23lif8NCAnEoCNns7Q';
 const redirectUri = 'http://localhost:5173/auth/github/callback';
+const clientId = import.meta.env.VITE_GITHUB_CLIENT_ID;
 
 function login() {
   const githubAuthUrl = `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&scope=user`;
