@@ -7,11 +7,7 @@
   </div>
 </template>
 
-<script setup lang="ts">
-import GlassNavbar from './components/GlassNavbar.vue';
-</script>
-
-<style>
+<style >
 :root {
   --bg-gradient-light: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
   --bg-gradient-dark: linear-gradient(135deg, #2c3e50 0%, #1a1a1a 100%);
