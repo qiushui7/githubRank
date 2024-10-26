@@ -12,10 +12,15 @@ export class SsrMiddleware implements NestMiddleware {
   private srcPath = join(__dirname, '..', '..', '..', 'client');
 
   async use(req: Request, res: Response, next: NextFunction) {
+    // 如果请求路径以 /api 开头，直接调用 next() 跳过 SSR 处理
+    if (req.path.startsWith('/api')) {
+      return next();
+    }
+
     try {
       const url = req.originalUrl;
       let template: string;
-      let render: (url: string) => Promise<{ html: string; ctx: any }>;
+      let render: (url: string, manifest: any) => Promise<{ html: string; ctx: any }>;
 
       if (!this.isProd) {
         if (!this.vite) {
@@ -34,8 +39,8 @@ export class SsrMiddleware implements NestMiddleware {
         render = require(join(this.distPath, 'server', 'entry-server.js')).render;
       }
 
-      const { html: appHtml, ctx } = await render(url);
-    
+      const { html: appHtml, ctx } = await render(url, {});
+      
       
       const html = template
         .replace(`<!--ssr-outlet-->`, appHtml);

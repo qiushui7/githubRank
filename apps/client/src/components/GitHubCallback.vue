@@ -1,32 +1,35 @@
 <template>
-  <div>处理 GitHub 登录中...</div>
+  <div>Processing GitHub login...</div>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import axios from 'axios';
+import { setToken } from '../service/auth';
 
 const router = useRouter();
 
 onMounted(async () => {
-  const urlParams = new URLSearchParams(window.location.search);
-  const code = urlParams.get('code');
-
+  const code = new URLSearchParams(window.location.search).get('code');
   if (code) {
     try {
-      // 这里应该调用你的后端 API 来交换访问令牌
-      const response = await axios.post('/api/github/callback', { code });
-      const { access_token } = response.data;
-
-      // 存储访问令牌（注意：在实际应用中，你可能想使用更安全的存储方式）
-      localStorage.setItem('github_token', access_token);
-
-      // 重定向到主页或用户仪表板
-      router.push('/');
+      const response = await fetch('/api/auth/github/callback', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ code }),
+      });
+      const data = await response.json();
+      if (data.access_token) {
+        setToken(data.access_token);
+        localStorage.setItem('user_info', JSON.stringify(data.user));
+        router.push('/');
+      } else {
+        throw new Error('Failed to get access token');
+      }
     } catch (error) {
-      console.error('GitHub 登录失败', error);
-      // 处理错误，可能重定向到错误页面
+      console.error('GitHub login error:', error);
       router.push('/login-error');
     }
   }

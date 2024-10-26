@@ -2,7 +2,7 @@ import { createApp } from './main'
 import { createVueRouter } from './router'
 import { renderToString } from 'vue/server-renderer'
 
-export async function render(url: string) {
+export async function render(url: string, manifest: any) {
   const app = createApp()
   
   const router = createVueRouter('server')
@@ -13,7 +13,6 @@ export async function render(url: string) {
   await router.push(url)
   // 等待路由解析完成
   await router.isReady()
-  console.log(url,app);
   const ctx = {}
   const html = await renderToString(app, ctx)
 

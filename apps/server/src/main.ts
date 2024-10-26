@@ -13,12 +13,10 @@ async function bootstrap() {
       appType: 'custom',
       root: join(__dirname, '..', '..', 'client'),
     });
-
     app.use(vite.middlewares);
   } else {
     app.useStaticAssets(join(__dirname, '..', '..', 'client', 'dist', 'client'), { prefix: '/' });
   }
-
   await app.listen(4777);
 }
 bootstrap();

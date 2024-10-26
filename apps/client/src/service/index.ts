@@ -1,6 +1,6 @@
 import axios from "axios"
 const service=axios.create({
-    timeout:5000,
+    baseURL:import.meta.env.VITE_BASE_URL,
     headers:{
         "Content-Type":"application/x-www-form-urlencoded"
     }
