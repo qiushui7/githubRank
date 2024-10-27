@@ -103,8 +103,8 @@ const toggleNavbar = () => {
   top: 20px;
   left: 50%;
   transform: translateX(-50%) translateY(0);
-  width: 90%;
-  max-width: 1200px;
+  width: 80vw;
+  max-width: 1600px;
   height: 80px;
   background: var(--bg-color);
   backdrop-filter: blur(10px);
@@ -115,6 +115,7 @@ const toggleNavbar = () => {
   z-index: 1000;
   transition: all 0.3s ease;
   overflow: visible;
+  padding: 0 10px;
 }
 
 .glass-navbar.hidden {

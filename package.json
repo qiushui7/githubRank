@@ -13,23 +13,7 @@
     "build": "pnpm run build:client && pnpm run build:server",
     "start": "pnpm run build && cd apps/server && pnpm start"
   },
-<<<<<<< Updated upstream
   "keywords": [],
   "author": "",
   "license": "ISC"
-=======
-  "dependencies": {
-    "@opentiny/vue": "^3.18.0",
-    "axios": "^1.7.7",
-    "less": "^4.2.0",
-    "vue": "^3.5.12",
-    "vue-router": "^4.4.5"
-  },
-  "devDependencies": {
-    "@vitejs/plugin-vue": "^5.1.4",
-    "typescript": "~5.6.2",
-    "vite": "^5.4.9",
-    "vue-tsc": "^2.1.6"
-  }
->>>>>>> Stashed changes
 }

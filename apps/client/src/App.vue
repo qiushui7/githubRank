@@ -32,13 +32,8 @@ body.dark-theme {
   color: #fff;
 }
 
-.app-container {
-  padding-top: 80px;
-}
-
 .main-content {
-  max-width: 1200px;
+  max-width: 1600px;
   margin: 0 auto;
-  padding: 2rem;
 }
 </style>

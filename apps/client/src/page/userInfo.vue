@@ -38,7 +38,7 @@
 </template>
 <script setup name="userInfo">
 import { computed, ref ,shallowRef} from 'vue'
-import { ChartPie as TinyChartPie } from '@opentiny/vue'
+//import { ChartPie as TinyChartPie } from '@opentiny/vue'
 import userInfoNavbar from '../components/userInfoNavbar.vue';
 import Total from '../components/Total.vue';
 import Summary from '../components/summary.vue';

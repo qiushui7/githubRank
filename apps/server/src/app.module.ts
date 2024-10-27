@@ -3,6 +3,8 @@ import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { SsrMiddleware } from './ssr/ssr.middleware';
 import { AuthModule } from './auth/auth.module';
+import { RedisCacheModule } from './cache/redis-cache.module';
+
 
 @Module({
   imports: [
@@ -10,6 +12,7 @@ import { AuthModule } from './auth/auth.module';
       isGlobal: true,
     }),
     AuthModule,
+    RedisCacheModule,
   ],
   controllers: [AppController],
   providers: [SsrMiddleware],
