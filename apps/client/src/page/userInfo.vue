@@ -23,10 +23,10 @@
             <div class="userInfo-right-nav">
                 <userInfoNavbar style="width: 100%; height: 100%;" v-model="tag"/> 
             </div>
-            <div>
-                <Suspense>
-                    <template #default>
-                        <component :is="componentTag"></component>
+            <div class="userInfo-right-content" style="width: 100%; height: 80%;">
+                <Suspense style="width: 98%;height: 100%;">
+                    <template #default style="width: 100%;height: 100%;">
+                        <component :is="componentTag" ></component>
                      </template>
                      <template #fallback>
                        <div>Loading took too long!</div>
@@ -98,6 +98,7 @@ const options = ref({
 </script>
 <style scoped lang="less">
 .userInfo-container{
+    margin-top: 10%;
     display: flex;
     margin-left: 50px;
     width: 90vw;
@@ -131,6 +132,9 @@ const options = ref({
         .userInfo-right-nav{
             height: 10%;
             border: 1px solid bisque;
+        }
+        .userInfo-right-content{
+            height: 90%;
         }
     }
     
