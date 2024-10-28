@@ -3,11 +3,15 @@ import { createMemoryHistory, createRouter, createWebHistory, RouteRecordRaw } f
 export const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
-    component: () => import('../page/rankList.vue')
+    component: () => import('../page/recommend/index.vue')
+  },
+  {
+    path: '/search/:query',
+    component: () => import('../page/search/index.vue')
   },
   {
     path: '/userInfo/:id',
-    component: () => import('../page/userInfo.vue')
+    component: () => import('../page/userInfo/index.vue')
   },
   {
     path: '/auth/github/callback',

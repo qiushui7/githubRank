@@ -19,11 +19,14 @@ export class SsrMiddleware implements NestMiddleware {
     const url = req.originalUrl;
     const cacheKey = `ssr:${url}`;
 
-    // 尝试从缓存中获取页面
-    const cachedPage = await this.cacheManager.get<string>(cacheKey);
-    if (cachedPage) {
-      console.log('缓存命中');
-      return res.status(200).set({ 'Content-Type': 'text/html' }).end(cachedPage);
+    // 只在生产环境使用缓存
+    if (this.isProd) {
+      // 尝试从缓存中获取页面
+      const cachedPage = await this.cacheManager.get<string>(cacheKey);
+      if (cachedPage) {
+        console.log('缓存命中');
+        return res.status(200).set({ 'Content-Type': 'text/html' }).end(cachedPage);
+      }
     }
 
     // 如果请求路径以 /api 开头，直接调用 next() 跳过 SSR 处理
@@ -58,8 +61,10 @@ export class SsrMiddleware implements NestMiddleware {
         const renderedPage = html;
         res.status(200).set({ 'Content-Type': 'text/html' }).end(html);
 
-        // 将渲染后的页面存入缓存
-        await this.cacheManager.set(cacheKey, renderedPage, 60 * 60 * 24 * 1000); // 缓存24小时
+        // 只在生产环境缓存页面
+        if (this.isProd) {
+          await this.cacheManager.set(cacheKey, renderedPage, 60 * 60 * 24 * 1000);
+        }
       } catch (renderError) {
         console.error('SSR Render Error:', renderError);
         // 降级为 CSR
