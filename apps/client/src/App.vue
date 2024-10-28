@@ -1,6 +1,8 @@
 <template>
   <div class="app-container">
-    <GlassNavbar />
+    <ClientOnly>
+      <GlassNavbar :changeTheme="changeTheme" />
+    </ClientOnly>
     <main class="main-content">
       <router-view></router-view>
     </main>
@@ -8,8 +10,23 @@
 </template>
 
 <script setup lang="ts">
+import { provide, ref, onBeforeMount } from 'vue';
 import GlassNavbar from './components/GlassNavbar.vue';
+import ClientOnly from '@duannx/vue-client-only';
 
+const isDarkTheme = ref(false);
+provide('isDarkTheme', isDarkTheme);
+
+const changeTheme = () => {
+  isDarkTheme.value = !isDarkTheme.value;
+  localStorage.setItem('isDarkTheme', String(isDarkTheme.value));
+  document.body.classList.toggle('dark-theme', isDarkTheme.value);
+};
+onBeforeMount(() => {
+  const theme = localStorage.getItem('isDarkTheme') === 'true';
+  isDarkTheme.value = theme;
+  document.body.classList.toggle('dark-theme', theme);
+});
 </script>
 
 <style>
@@ -33,6 +50,7 @@ body.dark-theme {
 }
 
 .main-content {
+  width: 80vw;
   max-width: 1600px;
   margin: 0 auto;
 }

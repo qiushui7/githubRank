@@ -1,6 +1,6 @@
 import { createMemoryHistory, createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
 
-export const routes: Array<RouteRecordRaw> = [
+const routes: RouteRecordRaw[] = [
   {
     path: '/',
     component: () => import('../page/recommend/index.vue')

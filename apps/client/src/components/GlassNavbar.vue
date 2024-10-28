@@ -31,42 +31,42 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onBeforeMount, onMounted } from 'vue';
+import { ref, computed, onMounted, inject, Ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { isAuthenticated } from '../service/auth';
 import GitHubLogin from './GitHubLogin.vue';
 import githubMark from '../assets/github-mark.svg';
 import githubMarkWhite from '../assets/github-mark-white.svg';
 
+// 定义 props
+const props = defineProps<{
+  changeTheme?: (isDark: boolean) => void
+}>();
 
 const githubIcon = [
   githubMark,
   githubMarkWhite
 ];
 
-const isDarkTheme = ref(false);
+const isDarkTheme = inject<Ref<boolean>>('isDarkTheme', ref(false));
 const isAuth = ref(false);
-const userInfo=ref<{avatar_url:string,login:string}>({avatar_url:'',login:''})
+const userInfo = ref<{avatar_url:string,login:string}>({avatar_url:'',login:''});
 const router = useRouter();
 const isNavbarVisible = ref(true);
 
 const currentLogo = computed(() => githubIcon[isDarkTheme.value ? 1 : 0]);
 
 const toggleTheme = () => {
-  isDarkTheme.value = !isDarkTheme.value;
-  localStorage.setItem('theme', String(isDarkTheme.value));
-  document.body.classList.toggle('dark-theme', isDarkTheme.value);
+  // 调用父组件传入的 changeTheme 方法
+  if (props.changeTheme) {
+    props.changeTheme(isDarkTheme.value);
+  }
 };
 
 const goHome = () => {
   router.push('/');
 };
 
-onBeforeMount(() => {
-  const theme = localStorage.getItem('theme') === 'true';
-  isDarkTheme.value = theme;
-  document.body.classList.toggle('dark-theme', theme);
-});
 onMounted(async()=>{
   isAuth.value=await isAuthenticated()
   userInfo.value=JSON.parse(localStorage.getItem('user_info')||'{}')
@@ -76,26 +76,6 @@ const toggleNavbar = () => {
   isNavbarVisible.value = !isNavbarVisible.value;
 };
 </script>
-
-<style>
-:root {
-  --bg-color: rgba(255, 255, 255, 0.7);
-  --text-color: #333;
-  --hover-bg-color: rgba(255, 255, 255, 0.9);
-  --border-color: rgba(0, 0, 0, 0.1);
-  --shadow-color: rgba(0, 0, 0, 0.1);
-  --search-bg-color: rgba(255, 255, 255, 0.9);
-}
-
-.dark-theme {
-  --bg-color: rgba(0, 0, 0, 0.6);
-  --text-color: #fff;
-  --hover-bg-color: rgba(255, 255, 255, 0.1);
-  --border-color: rgba(255, 255, 255, 0.1);
-  --shadow-color: rgba(0, 0, 0, 0.4);
-  --search-bg-color: rgba(255, 255, 255, 0.1);
-}
-</style>
 
 <style scoped>
 .glass-navbar {
