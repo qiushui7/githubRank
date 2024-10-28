@@ -10,8 +10,16 @@
         </div>
     </div>
 </template>
-<script setup>
-    let totalList =
+<script setup lang="ts">
+    interface total{
+        'Pushed to repos':Number,
+        'Main languages':Number,
+        'Total issues':Number,
+        'Total forks':Number,
+        'Total stars':Number,
+        'Followers':Number
+    }
+    let totalList:total =
     {
         'Pushed to repos':92,
         'Main languages':11,

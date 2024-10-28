@@ -36,17 +36,17 @@
         </div>
     </div>
 </template>
-<script setup name="userInfo">
+<script setup name="userInfo" lang="ts">
 import { computed, ref ,shallowRef} from 'vue'
-//import { ChartPie as TinyChartPie } from '@opentiny/vue'
-import userInfoNavbar from '../components/userInfoNavbar.vue';
-import Total from '../components/Total.vue';
-import Summary from '../components/summary.vue';
-import Rankings from '../components/Rankings.vue';
-import Score from '../components/Score.vue';
-import Repositories from '../components/Repositories.vue';
-import LatestIssues from '../components/LatestIssues.vue';
-let obj = {
+import { ChartPie as TinyChartPie } from '@opentiny/vue'
+import userInfoNavbar from './UserinfoNavbar.vue';
+import Total from './Total.vue';
+import Summary from './Summary.vue';
+import Rankings from './Rankings.vue';
+import Score from './Score.vue';
+import Repositories from './Repositories.vue';
+import LatestIssues from './LatestIssues.vue';
+let obj= {
     'Total':Total,
     'Summary':Summary,
     'Rankings':Rankings,
