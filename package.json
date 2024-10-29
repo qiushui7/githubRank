@@ -11,9 +11,34 @@
     "build:client:ssr": "cd apps/client && pnpm build:ssr",
     "build:server": "cd apps/server && pnpm build",
     "build": "pnpm run build:client && pnpm run build:server",
-    "start": "pnpm run build && cd apps/server && pnpm start"
+    "start": "pnpm run build && cd apps/server && pnpm start",
+    "commit": "cz",
+    "postinstall": "husky install"
+  },
+  "lint-staged": {
+    "*.{js,vue,ts,jsx,tsx}": [
+      "prettier --write",
+      "eslint --fix"
+    ],
+    "*.{html,css,less,scss,md}": [
+      "prettier --write"
+    ]
   },
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "@commitlint/cli": "^19.5.0",
+    "@commitlint/config-conventional": "^19.5.0",
+    "@typescript-eslint/eslint-plugin": "^8.0.0",
+    "@typescript-eslint/parser": "^8.0.0",
+    "commitizen": "^4.3.1",
+    "cz-conventional-changelog": "^3.3.0",
+    "eslint": "^9.0.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-prettier": "^5.0.0",
+    "husky": "^9.1.6",
+    "lint-staged": "^15.2.10",
+    "prettier": "^3.0.0"
+  }
 }
