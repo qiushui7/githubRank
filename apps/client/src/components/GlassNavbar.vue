@@ -236,5 +236,6 @@ onMounted(() => {
   max-width: 1600px;
   display: flex;
   justify-content: center;
+  margin: 0 auto;
 }
 </style>

@@ -1,23 +1,40 @@
-import axios from "axios"
-const service=axios.create({
-    baseURL:import.meta.env.VITE_BASE_URL,
-    headers:{
-        "Content-Type":"application/x-www-form-urlencoded"
+import axios from 'axios';
+import Cookies from 'js-cookie';
+
+const service = axios.create({
+  baseURL: '/api',
+  timeout: 5000,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
+// 请求拦截器
+service.interceptors.request.use(
+  (config) => {
+    const token = Cookies.get('token');
+    if (token) {
+      config.headers['Authorization'] = `Bearer ${token}`;
     }
-})
-service.interceptors.request.use(config=>{
-    if(config.method=="post"){
-        config.data=JSON.stringify(config.data)
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  },
+);
+
+// 响应拦截器
+service.interceptors.response.use(
+  (response) => {
+    const res = response.data;
+    if (res.code !== 200) {
+      return Promise.reject(new Error(res.message || 'Error'));
     }
-    if(localStorage.getItem('token')){
-        config.headers.token=localStorage.getItem('token')
-    }
-    return config
-})
-service.interceptors.response.use(res=>{
-    return Promise.resolve(res) 
-    // res.data.status===200? : Promise.reject(res)
-},err=>{
-    console.log(err)
-})
-export default service
+    return res;
+  },
+  (error) => {
+    return Promise.reject(error);
+  },
+);
+
+export default service;

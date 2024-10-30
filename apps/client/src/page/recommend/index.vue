@@ -219,6 +219,7 @@ onMounted(() => {
 
 <style scoped>
 .recommend-container {
+  width: 80vw;
   padding: 0 0 2rem 0;
   margin: 0 auto;
 }
@@ -233,6 +234,7 @@ onMounted(() => {
     #ec68f4 44.33%,
     #79e2ff 83.46%
   );
+  background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -245,6 +247,7 @@ onMounted(() => {
     #ff5982 21.25%,
     #ec68f4 44.33%
   );
+  background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -302,7 +305,7 @@ onMounted(() => {
 .dev-name {
   font-size: 1.25rem;
   margin: 0.5rem 0;
-  color: var(--color-text);
+  color: var(--text-color);
 }
 
 .username-container {
@@ -329,13 +332,13 @@ onMounted(() => {
 
 .bio {
   font-size: 0.9rem;
-  color: var(--color-text-light);
+  color: var(--text-color);
   margin: 0.5rem 0;
 }
 
 .followers {
   font-size: 0.8rem;
-  color: var(--color-text-light);
+  color: var(--text-color);
   margin-top: 0.5rem;
 }
 
@@ -450,7 +453,7 @@ onMounted(() => {
   border-radius: 0.5rem;
   border: 1px solid var(--border-color);
   background: var(--bg-color);
-  color: var(--color-text);
+  color: var(--text-color);
   font-size: 0.9rem;
   cursor: pointer;
   outline: none;

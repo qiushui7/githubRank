@@ -269,6 +269,7 @@ watch([selectedCountry, () => route.query.keyword], () => {
 <style scoped>
 .search-container {
   max-width: 1600px;
+  width: 80vw;
   margin: 0 auto;
 }
 
@@ -296,7 +297,7 @@ watch([selectedCountry, () => route.query.keyword], () => {
   border-radius: 0.5rem;
   border: 1px solid var(--border-color);
   background: var(--bg-color);
-  color: var(--color-text);
+  color: var(--text-color);
   font-size: 0.9rem;
   cursor: pointer;
   outline: none;
@@ -368,7 +369,7 @@ watch([selectedCountry, () => route.query.keyword], () => {
 .dev-name {
   font-size: 1.25rem;
   margin: 0;
-  color: var(--color-text);
+  color: var(--text-color);
 }
 
 .username-container {
@@ -398,7 +399,7 @@ watch([selectedCountry, () => route.query.keyword], () => {
 
 .bio {
   font-size: 0.9rem;
-  color: var(--color-text-light);
+  color: var(--text-color);
   margin: 0;
   line-height: 1.5;
 }
@@ -418,12 +419,12 @@ watch([selectedCountry, () => route.query.keyword], () => {
 .followers-count {
   font-size: 1.5rem;
   font-weight: bold;
-  color: var(--color-text);
+  color: var(--text-color);
 }
 
 .followers-label {
   font-size: 0.8rem;
-  color: var(--color-text-light);
+  color: var(--text-color);
 }
 
 /* 骨架屏样式 */
@@ -542,7 +543,7 @@ watch([selectedCountry, () => route.query.keyword], () => {
 .no-results {
   text-align: center;
   padding: 3rem;
-  color: var(--color-text);
+  color: var(--text-color);
   font-size: 1.2rem;
 }
 
@@ -563,12 +564,12 @@ watch([selectedCountry, () => route.query.keyword], () => {
 
 .stat-label {
   font-size: 0.8rem;
-  color: var(--color-text-light);
+  color: var(--text-color);
 }
 
 .stat-value {
   font-size: 0.9rem;
-  color: var(--color-text);
+  color: var(--text-color);
   font-weight: 500;
   display: flex;
   align-items: center;

@@ -52,16 +52,22 @@ importers:
         version: 1.0.3(vue@3.5.12(typescript@5.6.3))
       '@opentiny/vue':
         specifier: '3'
-        version: 3.18.0(echarts@5.4.1)
+        version: 3.18.0(echarts@5.5.1)
       axios:
         specifier: ^1.7.7
         version: 1.7.7
+      echarts:
+        specifier: ^5.4.3
+        version: 5.5.1
       js-cookie:
         specifier: ^3.0.1
         version: 3.0.5
       vue:
         specifier: ^3.5.12
         version: 3.5.12(typescript@5.6.3)
+      vue-echarts:
+        specifier: ^6.6.8
+        version: 6.7.3(@vue/runtime-core@3.5.12)(echarts@5.5.1)(vue@3.5.12(typescript@5.6.3))
       vue-router:
         specifier: ^4.4.5
         version: 4.4.5(vue@3.5.12(typescript@5.6.3))
@@ -2758,6 +2764,9 @@ packages:
   echarts@5.4.1:
     resolution: {integrity: sha512-9ltS3M2JB0w2EhcYjCdmtrJ+6haZcW6acBolMGIuf01Hql1yrIV01L1aRj7jsaaIULJslEP9Z3vKlEmnJaWJVQ==}
 
+  echarts@5.5.1:
+    resolution: {integrity: sha512-Fce8upazaAXUVUVsjgV6mBnGuqgO+JNDlcgF79Dksy4+wgGpQB2lmYoO4TSweFg/mZITdpGHomw/cNBJZj1icA==}
+
   ee-first@1.1.1:
     resolution: {integrity: sha512-WMwm9LhRUo+WUaRN+vRuETqG89IgZphVSNkdFgeb6sS/E4OrDIN7t48CAewSHXc6C8lefD8KKfr5vY61brQlow==}
 
@@ -4230,6 +4239,9 @@ packages:
   require-main-filename@2.0.0:
     resolution: {integrity: sha512-NKN5kMDylKuldxYLSUfrbo5Tuzh4hd+2E8NPPX02mZtn1VuREQToYe/ZdlJy+J3uCpfaiGF05e7B8W0iXbQHmg==}
 
+  resize-detector@0.3.0:
+    resolution: {integrity: sha512-R/tCuvuOHQ8o2boRP6vgx8hXCCy87H1eY9V5imBYeVNyNVpuL9ciReSccLj2gDcax9+2weXy3bc8Vv+NRXeEvQ==}
+
   resolve-cwd@3.0.0:
     resolution: {integrity: sha512-OrZaX2Mb+rJCpH/6CpSqt9xFVpN++x01XnN2ie9g6P5/3xelLAkXWVADpdz1IHD/KFfEXyE6V0U01OQ3UO2rEg==}
     engines: {node: '>=8'}
@@ -4795,6 +4807,30 @@ packages:
   vscode-uri@3.0.8:
     resolution: {integrity: sha512-AyFQ0EVmsOZOlAnxoFOGOq1SQDWAB7C6aqMGS23svWAllfOaxbuFvcT8D1i8z3Gyn8fraVeZNNmN6e9bxxXkKw==}
 
+  vue-demi@0.13.11:
+    resolution: {integrity: sha512-IR8HoEEGM65YY3ZJYAjMlKygDQn25D5ajNFNoKh9RSDMQtlzCxtfQjdQgv9jjK+m3377SsJXY8ysq8kLCZL25A==}
+    engines: {node: '>=12'}
+    hasBin: true
+    peerDependencies:
+      '@vue/composition-api': ^1.0.0-rc.1
+      vue: ^3.0.0-0 || ^2.6.0
+    peerDependenciesMeta:
+      '@vue/composition-api':
+        optional: true
+
+  vue-echarts@6.7.3:
+    resolution: {integrity: sha512-vXLKpALFjbPphW9IfQPOVfb1KjGZ/f8qa/FZHi9lZIWzAnQC1DgnmEK3pJgEkyo6EP7UnX6Bv/V3Ke7p+qCNXA==}
+    peerDependencies:
+      '@vue/composition-api': ^1.0.5
+      '@vue/runtime-core': ^3.0.0
+      echarts: ^5.4.1
+      vue: ^2.6.12 || ^3.1.1
+    peerDependenciesMeta:
+      '@vue/composition-api':
+        optional: true
+      '@vue/runtime-core':
+        optional: true
+
   vue-router@4.4.5:
     resolution: {integrity: sha512-4fKZygS8cH1yCyuabAXGUAsyi1b2/o/OKgu/RUb+znIYOxPRxdkytJEx+0wGcpBE1pX6vUgh5jwWOKRGvuA/7Q==}
     peerDependencies:
@@ -4941,6 +4977,9 @@ packages:
 
   zrender@5.4.1:
     resolution: {integrity: sha512-M4Z05BHWtajY2241EmMPHglDQAJ1UyHQcYsxDNzD9XLSkPDqMq4bB28v9Pb4mvHnVQ0GxyTklZ/69xCFP6RXBA==}
+
+  zrender@5.6.0:
+    resolution: {integrity: sha512-uzgraf4njmmHAbEUxMJ8Oxg+P3fT04O+9p7gY+wJRVxo8Ge+KmYv0WJev945EH4wFuc4OY2NLXz46FZrWS9xJg==}
 
 snapshots:
 
@@ -6247,11 +6286,11 @@ snapshots:
       '@opentiny/vue-chart-core': 3.18.0
       '@opentiny/vue-common': 3.18.0
 
-  '@opentiny/vue-chart-liquidfill@3.18.0(echarts@5.4.1)':
+  '@opentiny/vue-chart-liquidfill@3.18.0(echarts@5.5.1)':
     dependencies:
       '@opentiny/vue-chart-core': 3.18.0
       '@opentiny/vue-common': 3.18.0
-      echarts-liquidfill: 3.1.0(echarts@5.4.1)
+      echarts-liquidfill: 3.1.0(echarts@5.5.1)
     transitivePeerDependencies:
       - echarts
 
@@ -6308,15 +6347,15 @@ snapshots:
       '@opentiny/vue-common': 3.18.0
       '@opentiny/vue-locale': 3.18.0
 
-  '@opentiny/vue-chart-wordcloud@3.18.0(echarts@5.4.1)':
+  '@opentiny/vue-chart-wordcloud@3.18.0(echarts@5.5.1)':
     dependencies:
       '@opentiny/vue-chart-core': 3.18.0
       '@opentiny/vue-common': 3.18.0
-      echarts-wordcloud: 2.0.0(echarts@5.4.1)
+      echarts-wordcloud: 2.0.0(echarts@5.5.1)
     transitivePeerDependencies:
       - echarts
 
-  '@opentiny/vue-chart@3.18.0(echarts@5.4.1)':
+  '@opentiny/vue-chart@3.18.0(echarts@5.5.1)':
     dependencies:
       '@opentiny/vue-autonavi-map': 3.18.0
       '@opentiny/vue-baidu-map': 3.18.0
@@ -6330,7 +6369,7 @@ snapshots:
       '@opentiny/vue-chart-heatmap': 3.18.0
       '@opentiny/vue-chart-histogram': 3.18.0
       '@opentiny/vue-chart-line': 3.18.0
-      '@opentiny/vue-chart-liquidfill': 3.18.0(echarts@5.4.1)
+      '@opentiny/vue-chart-liquidfill': 3.18.0(echarts@5.5.1)
       '@opentiny/vue-chart-map': 3.18.0
       '@opentiny/vue-chart-pie': 3.18.0
       '@opentiny/vue-chart-radar': 3.18.0
@@ -6340,7 +6379,7 @@ snapshots:
       '@opentiny/vue-chart-sunburst': 3.18.0
       '@opentiny/vue-chart-tree': 3.18.0
       '@opentiny/vue-chart-waterfall': 3.18.0
-      '@opentiny/vue-chart-wordcloud': 3.18.0(echarts@5.4.1)
+      '@opentiny/vue-chart-wordcloud': 3.18.0(echarts@5.5.1)
       '@opentiny/vue-common': 3.18.0
       '@opentiny/vue-locale': 3.18.0
       '@opentiny/vue-theme': 3.18.4
@@ -7846,7 +7885,7 @@ snapshots:
       '@opentiny/vue-renderless': 3.18.6
       '@opentiny/vue-theme': 3.18.4
 
-  '@opentiny/vue@3.18.0(echarts@5.4.1)':
+  '@opentiny/vue@3.18.0(echarts@5.5.1)':
     dependencies:
       '@opentiny/vue-action-menu': 3.18.0
       '@opentiny/vue-action-sheet': 3.18.0
@@ -7882,7 +7921,7 @@ snapshots:
       '@opentiny/vue-cascader-select': 3.18.0
       '@opentiny/vue-cascader-view': 3.18.0
       '@opentiny/vue-cell': 3.18.0
-      '@opentiny/vue-chart': 3.18.0(echarts@5.4.1)
+      '@opentiny/vue-chart': 3.18.0(echarts@5.5.1)
       '@opentiny/vue-chart-bar': 3.18.0
       '@opentiny/vue-chart-boxplot': 3.18.0
       '@opentiny/vue-chart-candle': 3.18.0
@@ -7893,7 +7932,7 @@ snapshots:
       '@opentiny/vue-chart-heatmap': 3.18.0
       '@opentiny/vue-chart-histogram': 3.18.0
       '@opentiny/vue-chart-line': 3.18.0
-      '@opentiny/vue-chart-liquidfill': 3.18.0(echarts@5.4.1)
+      '@opentiny/vue-chart-liquidfill': 3.18.0(echarts@5.5.1)
       '@opentiny/vue-chart-map': 3.18.0
       '@opentiny/vue-chart-pie': 3.18.0
       '@opentiny/vue-chart-process': 3.18.0
@@ -7904,7 +7943,7 @@ snapshots:
       '@opentiny/vue-chart-sunburst': 3.18.0
       '@opentiny/vue-chart-tree': 3.18.0
       '@opentiny/vue-chart-waterfall': 3.18.0
-      '@opentiny/vue-chart-wordcloud': 3.18.0(echarts@5.4.1)
+      '@opentiny/vue-chart-wordcloud': 3.18.0(echarts@5.5.1)
       '@opentiny/vue-checkbox': 3.18.0
       '@opentiny/vue-checkbox-button': 3.18.0
       '@opentiny/vue-checkbox-group': 3.18.0
@@ -9171,18 +9210,23 @@ snapshots:
 
   eastasianwidth@0.2.0: {}
 
-  echarts-liquidfill@3.1.0(echarts@5.4.1):
+  echarts-liquidfill@3.1.0(echarts@5.5.1):
     dependencies:
-      echarts: 5.4.1
+      echarts: 5.5.1
 
-  echarts-wordcloud@2.0.0(echarts@5.4.1):
+  echarts-wordcloud@2.0.0(echarts@5.5.1):
     dependencies:
-      echarts: 5.4.1
+      echarts: 5.5.1
 
   echarts@5.4.1:
     dependencies:
       tslib: 2.3.0
       zrender: 5.4.1
+
+  echarts@5.5.1:
+    dependencies:
+      tslib: 2.3.0
+      zrender: 5.6.0
 
   ee-first@1.1.1: {}
 
@@ -10878,6 +10922,8 @@ snapshots:
 
   require-main-filename@2.0.0: {}
 
+  resize-detector@0.3.0: {}
+
   resolve-cwd@3.0.0:
     dependencies:
       resolve-from: 5.0.0
@@ -11388,6 +11434,19 @@ snapshots:
 
   vscode-uri@3.0.8: {}
 
+  vue-demi@0.13.11(vue@3.5.12(typescript@5.6.3)):
+    dependencies:
+      vue: 3.5.12(typescript@5.6.3)
+
+  vue-echarts@6.7.3(@vue/runtime-core@3.5.12)(echarts@5.5.1)(vue@3.5.12(typescript@5.6.3)):
+    dependencies:
+      echarts: 5.5.1
+      resize-detector: 0.3.0
+      vue: 3.5.12(typescript@5.6.3)
+      vue-demi: 0.13.11(vue@3.5.12(typescript@5.6.3))
+    optionalDependencies:
+      '@vue/runtime-core': 3.5.12
+
   vue-router@4.4.5(vue@3.5.12(typescript@5.6.3)):
     dependencies:
       '@vue/devtools-api': 6.6.4
@@ -11560,5 +11619,9 @@ snapshots:
   yocto-queue@1.1.1: {}
 
   zrender@5.4.1:
+    dependencies:
+      tslib: 2.3.0
+
+  zrender@5.6.0:
     dependencies:
       tslib: 2.3.0

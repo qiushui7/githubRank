@@ -148,7 +148,7 @@ const handleJump = () => {
   border: 1px solid var(--border-color);
   border-radius: 0.5rem;
   background: var(--bg-color);
-  color: var(--color-text);
+  color: var(--text-color);
   cursor: pointer;
   transition: all 0.3s ease;
 }
@@ -175,7 +175,7 @@ const handleJump = () => {
   border: 1px solid var(--border-color);
   border-radius: 0.5rem;
   background: var(--bg-color);
-  color: var(--color-text);
+  color: var(--text-color);
   cursor: pointer;
   transition: all 0.3s ease;
   display: flex;
@@ -195,7 +195,7 @@ const handleJump = () => {
 }
 
 .ellipsis {
-  color: var(--color-text);
+  color: var(--text-color);
   padding: 0 0.5rem;
 }
 
@@ -203,7 +203,7 @@ const handleJump = () => {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  color: var(--color-text);
+  color: var(--text-color);
 }
 
 .jump-input {
@@ -212,7 +212,7 @@ const handleJump = () => {
   border: 1px solid var(--border-color);
   border-radius: 0.5rem;
   background: var(--bg-color);
-  color: var(--color-text);
+  color: var(--text-color);
   text-align: center;
   outline: none;
   transition: all 0.3s ease;
@@ -230,6 +230,7 @@ const handleJump = () => {
 }
 
 .jump-input[type='number'] {
+  appearance: textfield;
   -moz-appearance: textfield;
 }
 
