@@ -1,11 +1,9 @@
 <template>
-  <button @click="login" class="github-login-button">
-    使用 GitHub 登录
-  </button>
+  <button @click="login" class="github-login-button">使用 GitHub 登录</button>
 </template>
 
 <script setup lang="ts">
-const redirectUri = 'http://localhost:4777/auth/github/callback';
+const redirectUri = import.meta.env.VITE_GITHUB_CALLBACK_URL;
 const clientId = import.meta.env.VITE_GITHUB_CLIENT_ID;
 console.log(clientId);
 
@@ -23,7 +21,9 @@ function login() {
   padding: 0.5rem 1rem;
   border-radius: 8px;
   cursor: pointer;
-  transition: background-color 0.3s ease, color 0.3s ease;
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
 }
 
 .github-login-button:hover {
