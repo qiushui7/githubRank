@@ -24,8 +24,7 @@ import Rankings from './Rankings.vue';
 import Summary from './Summary.vue';
 import Score from './Score.vue';
 import Repositories from './Repositories.vue';
-import LatestIssues from './LatestIssues.vue';
-
+// import LatestIssues from './LatestIssues.vue';
 // 模拟用户数据
 const userInfo = ref({
   name: '尤雨溪',
@@ -48,7 +47,6 @@ const currentComponent = computed(() => {
     Summary,
     Score,
     Repositories,
-    LatestIssues,
   };
   return components[currentTab.value as keyof typeof components];
 });
@@ -57,10 +55,10 @@ const currentComponent = computed(() => {
 <style scoped lang="less">
 .user-info-container {
   display: flex;
+  height: 80vh;
   gap: 2rem;
   min-height: calc(100vh - 140px);
   color: var(--text-color);
-  margin-bottom: 20px;
   .content-section {
     flex: 1;
     display: flex;
@@ -73,6 +71,8 @@ const currentComponent = computed(() => {
       padding: 1.5rem;
       border: 1px solid var(--border-color);
       flex: 1;
+      overflow: scroll;
+      overflow-x: hidden;
     }
   }
 }
