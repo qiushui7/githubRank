@@ -25,7 +25,9 @@ export default defineConfig({
     assetsDir: 'assets',
     manifest: true,
     rollupOptions: {
-      input: 'src/entry-client.ts',
+      input: {
+        main: path.resolve(__dirname, 'index.html'),
+      },
     },
   },
 });

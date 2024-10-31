@@ -25,7 +25,10 @@ export class SsrMiddleware implements NestMiddleware {
       const cachedPage = await this.cacheManager.get<string>(cacheKey);
       if (cachedPage) {
         console.log('缓存命中');
-        return res.status(200).set({ 'Content-Type': 'text/html' }).end(cachedPage);
+        return res
+          .status(200)
+          .set({ 'Content-Type': 'text/html' })
+          .end(cachedPage);
       }
     }
 
@@ -36,7 +39,10 @@ export class SsrMiddleware implements NestMiddleware {
 
     try {
       let template: string;
-      let render: (url: string, manifest: any) => Promise<{ html: string; ctx: any }>;
+      let render: (
+        url: string,
+        manifest: any,
+      ) => Promise<{ html: string; ctx: any }>;
 
       if (!this.isProd) {
         if (!this.vite) {
@@ -51,8 +57,13 @@ export class SsrMiddleware implements NestMiddleware {
         template = await this.vite.transformIndexHtml(url, template);
         render = (await this.vite.ssrLoadModule('/src/entry-server.ts')).render;
       } else {
-        template = readFileSync(join(this.distPath, 'client', 'index.html'), 'utf-8');
-        render = require(join(this.distPath, 'server', 'entry-server.js')).render;
+        template = readFileSync(
+          join(this.distPath, 'client', 'index.html'),
+          'utf-8',
+        );
+        render = require(
+          join(this.distPath, 'server', 'entry-server.cjs'),
+        ).render;
       }
 
       try {
@@ -63,7 +74,11 @@ export class SsrMiddleware implements NestMiddleware {
 
         // 只在生产环境缓存页面
         if (this.isProd) {
-          await this.cacheManager.set(cacheKey, renderedPage, 60 * 60 * 24 * 1000);
+          await this.cacheManager.set(
+            cacheKey,
+            renderedPage,
+            60 * 60 * 24 * 1000,
+          );
         }
       } catch (renderError) {
         console.error('SSR Render Error:', renderError);

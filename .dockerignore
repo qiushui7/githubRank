@@ -1,0 +1,36 @@
+# 依赖
+node_modules
+**/node_modules
+
+# 版本控制
+.git
+.gitignore
+.gitattributes
+
+# 开发工具配置
+.idea
+.vscode
+*.swp
+*.swo
+
+# 构建输出
+**/dist
+**/build
+
+# 日志
+**/logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# 测试文件
+**/coverage
+**/.nyc_output
+**/test
+
+# 环境变量文件
+!.env.example
+
+# 其他
+.DS_Store
+*.md

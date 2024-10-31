@@ -1,6 +1,6 @@
-import { defineConfig } from 'vite'
-import vue from '@vitejs/plugin-vue'
-import { resolve } from 'path'
+import { defineConfig } from 'vite';
+import vue from '@vitejs/plugin-vue';
+import { resolve } from 'path';
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -15,6 +15,9 @@ export default defineConfig({
     outDir: 'dist/server',
     rollupOptions: {
       input: 'src/entry-server.ts',
+      output: {
+        format: 'cjs', // 改为 CommonJS 格式
+      },
     },
   },
-})
+});

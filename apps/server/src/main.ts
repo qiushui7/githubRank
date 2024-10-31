@@ -15,7 +15,12 @@ async function bootstrap() {
     });
     app.use(vite.middlewares);
   } else {
-    app.useStaticAssets(join(__dirname, '..', '..', 'client', 'dist', 'client'), { prefix: '/' });
+    app.useStaticAssets(
+      join(__dirname, '..', '..', 'client', 'dist', 'client'),
+      {
+        index: false, // 禁用默认的 index.html 处理
+      },
+    );
   }
   await app.listen(4777);
 }
