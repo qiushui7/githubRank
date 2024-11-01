@@ -5,7 +5,6 @@
 <script setup lang="ts">
 const redirectUri = import.meta.env.VITE_GITHUB_CALLBACK_URL;
 const clientId = import.meta.env.VITE_GITHUB_CLIENT_ID;
-console.log(clientId);
 
 function login() {
   const githubAuthUrl = `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&scope=user`;
