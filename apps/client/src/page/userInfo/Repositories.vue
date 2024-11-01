@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <table style="width: 55vw; margin-left: 1vw; margin-top: -1vh">
+  <div style="width: 100%">
+    <table style="width: 55vw; margin-top: -1vh">
       <thead>
         <tr>
           <th>Name</th>
@@ -70,19 +70,15 @@ th {
 tr {
   transition: background-color 0.3s ease;
 }
-
-tr:hover {
-  background-color: #f5f5f5;
-}
-
 /* 表格单元格样式 */
 td {
   padding: 10px;
   border-bottom: 1px solid #e0e0e0;
 }
-
-/* 隔行变色 */
-tbody tr:nth-child(even) {
-  background-color: #f9f9f9;
+th,
+td {
+  border: 1px solid #ccc;
+  padding: 8px;
+  text-align: left;
 }
 </style>
