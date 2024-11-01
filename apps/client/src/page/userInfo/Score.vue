@@ -74,16 +74,29 @@
       </div>
     </div>
     <div class="Score-container-content">
-      <div class="content-user">
+      <div style="margin-left: 17vw; margin-top: -3vh; display: flex">
+        <div>
+          <span style="text-align: end; line-height: 40px">评分</span>
+        </div>
+        <div style="padding-bottom: 10px">
+          <tiny-rate v-model="userScore" :max="5" size="20px"></tiny-rate>
+        </div>
+      </div>
+      <div class="content-user" style="margin-top: 1vh">
         <textarea
           id="myTextarea"
           placeholder="在这里留下你的评论吧"
           v-model="userValue"
         ></textarea>
         <div class="content-user-rate">
-          <tiny-rate v-model="userScore" :max="5"></tiny-rate>
           <button
-            style="margin-left: 15vw; background-color: #4169e1; cursor: grab"
+            style="
+              margin-left: 20vw;
+              background-color: #4169e1;
+              cursor: grab;
+              width: 4vw;
+              height: 4vh;
+            "
             @click="uploadScore"
           >
             发布
