@@ -1,8 +1,8 @@
 import axios from 'axios';
-import Cookies from 'js-cookie';
+import { getCookie } from '../utils/useAuthStore';
 
 const service = axios.create({
-  baseURL: '/api',
+  baseURL: '/service',
   timeout: 5000,
   headers: {
     'Content-Type': 'application/json',
@@ -12,9 +12,10 @@ const service = axios.create({
 // 请求拦截器
 service.interceptors.request.use(
   (config) => {
-    const token = Cookies.get('token');
-    if (token) {
-      config.headers['Authorization'] = `Bearer ${token}`;
+    const token = getCookie('user_info');
+    const userInfo = token ? JSON.parse(token) : null;
+    if (userInfo) {
+      config.headers['Authorization'] = `${userInfo.login}`;
     }
     return config;
   },
@@ -26,9 +27,9 @@ service.interceptors.request.use(
 // 响应拦截器
 service.interceptors.response.use(
   (response) => {
-    const res = response.data;
-    if (res.code !== 200) {
-      return Promise.reject(new Error(res.message || 'Error'));
+    const res = response;
+    if (res.status !== 200) {
+      return Promise.reject(new Error(res.statusText || 'Error'));
     }
     return res;
   },

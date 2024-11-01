@@ -66,6 +66,7 @@
 <script setup lang="ts">
 import ClientOnly from '@duannx/vue-client-only';
 import { ref, onMounted, watch } from 'vue';
+import { getRecommendDevelopers } from '../../service/recommend';
 
 interface Developer {
   id: number;
@@ -200,6 +201,9 @@ const mockDevelopers: Developer[] = [
 const fetchDevelopers = async () => {
   isLoading.value = true;
   try {
+    const response = await getRecommendDevelopers(selectedPeriod.value);
+    console.log(response);
+
     // 实际项目中这里应该根据 selectedPeriod.value 调用API
     await new Promise((resolve) => setTimeout(resolve, 1000));
     developers.value = mockDevelopers;
@@ -317,6 +321,7 @@ onMounted(() => {
 }
 
 .country-flag {
+  color: var(--text-color);
   font-size: 1.2rem;
 }
 
