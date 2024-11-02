@@ -3,7 +3,8 @@ import { Request, Response, NextFunction } from 'express';
 import { createServer } from 'vite';
 import { join } from 'path';
 import { readFileSync } from 'fs';
-import { CACHE_MANAGER, CacheStore } from '@nestjs/cache-manager';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
 import { Inject } from '@nestjs/common';
 import { RoutePrefetchService } from './route-prefetch.config';
 
@@ -15,7 +16,7 @@ export class SsrMiddleware implements NestMiddleware {
   private srcPath = join(__dirname, '..', '..', '..', 'client');
 
   constructor(
-    @Inject(CACHE_MANAGER) private cacheManager: CacheStore,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
     private readonly routePrefetchService: RoutePrefetchService,
   ) {}
 
@@ -37,7 +38,7 @@ export class SsrMiddleware implements NestMiddleware {
     }
 
     // 如果请求路径以 /api 开头，直接调用 next() 跳过 SSR 处理
-    if (req.path.startsWith('/api')) {
+    if (req.path.startsWith('/api') || req.path.startsWith('/service')) {
       return next();
     }
 
@@ -123,6 +124,27 @@ export class SsrMiddleware implements NestMiddleware {
       }
       console.error('SSR Middleware Error:', e);
       next(e);
+    }
+  }
+
+  /**
+   * 清除所有 SSR 缓存
+   */
+  public async clearCache(): Promise<void> {
+    try {
+      // 获取所有以 'ssr:' 开头的缓存键
+      const keys = await this.cacheManager.store.keys();
+      const ssrKeys = keys.filter((key) => key.startsWith('ssr:'));
+
+      if (ssrKeys.length > 0) {
+        await Promise.all(ssrKeys.map((key) => this.cacheManager.del(key)));
+        console.log(`SSR cache cleared: ${ssrKeys.length} keys removed`);
+      } else {
+        console.log('No SSR cache to clear');
+      }
+    } catch (error) {
+      console.error('Failed to clear SSR cache:', error);
+      throw error;
     }
   }
 }

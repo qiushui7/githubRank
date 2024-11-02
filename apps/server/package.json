@@ -29,7 +29,7 @@
     "@vitejs/plugin-vue": "^4.2.3",
     "cache-manager": "^5.7.6",
     "cache-manager-ioredis-yet": "^2.1.2",
-    "reflect-metadata": "^0.1.13",
+    "http-proxy-middleware": "^3.0.3",
     "rxjs": "^7.2.0",
     "vite": "^4.3.9",
     "vue": "^3.2.47"
