@@ -7,7 +7,6 @@
           <th>Language</th>
           <th>Creater at</th>
           <th>Push at</th>
-          <th>Issues</th>
           <th>Forks</th>
           <th>Stars</th>
           <th>Size</th>
@@ -15,36 +14,32 @@
       </thead>
       <tbody>
         <tr v-for="item in RepositoriesList">
-          <td>{{ item['Name'] }}</td>
-          <td>{{ item['Language'] }}</td>
-          <td>{{ item['Created at'] }}</td>
-          <td>{{ item['Push at'] }}</td>
-          <td>{{ item['Issues'] }}</td>
-          <td>{{ item['Forks'] }}</td>
-          <td>{{ item['Stars'] }}</td>
-          <td>{{ item['Size'] }}</td>
+          <td>{{ item['name'] }}</td>
+          <td>{{ item['language'] }}</td>
+          <td>{{ item['created_at'] }}</td>
+          <td>{{ item['pushed_at'] }}</td>
+          <td>{{ item['forks'] }}</td>
+          <td>{{ item['stargazers_count'] }}</td>
+          <td>{{ item['size'] }}</td>
         </tr>
       </tbody>
     </table>
   </div>
 </template>
-<script setup>
+<script setup lang="ts">
 import { ref } from 'vue';
-let RepositoriesList = ref([
-  {
-    Name: 'opensourcepledge.com',
-    Language: 'JavaScript',
-    'Created at': '2004-08-08',
-    'Push at': '2004-08-08',
-    Issues: 5,
-    Forks: 18,
-    Stars: 500,
-    Size: 3900,
-  },
-]);
-for (let i = 1; i < 20; i++) {
-  RepositoriesList.value[i] = RepositoriesList.value[0];
+interface UserInfo {
+  repos_url: string;
 }
+let reposUrl = defineProps<{
+  userInfo: UserInfo;
+}>();
+let RepositoriesList = ref([]);
+fetch(`${reposUrl.userInfo.repos_url}`).then((res) =>
+  res.json().then((data) => {
+    RepositoriesList.value = data;
+  }),
+);
 </script>
 <style scoped>
 table {

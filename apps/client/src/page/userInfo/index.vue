@@ -10,7 +10,7 @@
 
       <!-- 内容展示区域 -->
       <div class="tab-content">
-        <component :is="currentComponent" />
+        <component :is="currentComponent" :user-info="userInfo" />
       </div>
     </div>
   </div>
@@ -37,7 +37,11 @@ const userInfo = ref({
   totalStars: 15904,
   followers: 101745,
 });
-
+fetch('/api//info/userInfo?github_id=yyx990803').then((res) =>
+  res.json().then((data) => {
+    userInfo.value = data;
+  }),
+);
 // 更新默认标签页
 const currentTab = ref('Rankings');
 
