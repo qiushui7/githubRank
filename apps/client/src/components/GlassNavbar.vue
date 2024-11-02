@@ -2,10 +2,12 @@
   <div class="navbar-container">
     <nav class="glass-navbar">
       <div class="nav-content">
-        <div class="logo-container" @click="goHome">
-          <img :src="currentLogo" alt="github" class="logo" />
-          <span class="site-name">GitHub Rank</span>
-        </div>
+        <ClientOnly>
+          <div class="logo-container" @click="goHome">
+            <img :src="currentLogo" alt="github" class="logo" />
+            <span class="site-name">GitHub Rank</span>
+          </div>
+        </ClientOnly>
         <div class="search-container">
           <input
             type="text"
@@ -36,9 +38,11 @@
             <template v-else>
               <GitHubLogin class="nav-item" />
             </template>
-            <button @click="toggleTheme" class="theme-toggle">
-              {{ isDarkTheme ? '🌞' : '🌙' }}
-            </button>
+            <ClientOnly>
+              <button @click="toggleTheme" class="theme-toggle">
+                {{ isDarkTheme ? '🌞' : '🌙' }}
+              </button>
+            </ClientOnly>
           </div>
         </div>
       </div>
@@ -49,6 +53,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, inject, Ref } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
+import ClientOnly from '@duannx/vue-client-only';
 import GitHubLogin from './GitHubLogin.vue';
 import githubMark from '../assets/github-mark.svg';
 import githubMarkWhite from '../assets/github-mark-white.svg';
