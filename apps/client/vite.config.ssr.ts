@@ -23,6 +23,7 @@ export default defineConfig({
   build: {
     ssr: true,
     outDir: 'dist/server',
+    ssrManifest: true,
     rollupOptions: {
       input: 'src/entry-server.ts',
       output: {

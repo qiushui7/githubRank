@@ -46,14 +46,18 @@ export class SsrMiddleware implements NestMiddleware {
       let render: (
         url: string,
         preloadData: any,
+        manifest: any,
       ) => Promise<{
         html: string;
         ctx: any;
         headTags: string;
         htmlAttrs: string;
         bodyAttrs: string;
+        preloadLinks: string;
       }>;
-
+      let manifest: any = require(
+        join(this.distPath, 'client', '.vite', 'manifest.json'),
+      );
       if (!this.isProd) {
         if (!this.vite) {
           this.vite = await createServer({
@@ -85,14 +89,17 @@ export class SsrMiddleware implements NestMiddleware {
           headTags,
           htmlAttrs,
           bodyAttrs,
-        } = await render(url, prefetchData);
+          preloadLinks,
+        } = await render(url, prefetchData, manifest);
         const preloadStateScript = `<script>window.__PRELOAD_STATE__ = ${JSON.stringify(ctx.preloadState)}</script>`;
         const html = template
+          .replace(`<!--preload-links-->`, preloadLinks)
           .replace('<html>', `<html ${htmlAttrs}>`)
           .replace('<body>', `<body ${bodyAttrs}>`)
           .replace('</head>', `${headTags}</head>`)
           .replace(`<!--ssr-outlet-->`, appHtml)
           .replace(`<!--preload-state-->`, preloadStateScript);
+
         const renderedPage = html;
         res.status(200).set({ 'Content-Type': 'text/html' }).end(html);
 
