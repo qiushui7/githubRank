@@ -12,6 +12,8 @@
   "dependencies": {
     "@duannx/vue-client-only": "^1.0.3",
     "@opentiny/vue": "3",
+    "@unhead/ssr": "^1.11.10",
+    "@unhead/vue": "^1.11.10",
     "axios": "^1.7.7",
     "echarts": "^5.4.3",
     "js-cookie": "^3.0.1",

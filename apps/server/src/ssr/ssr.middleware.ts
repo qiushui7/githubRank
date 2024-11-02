@@ -5,6 +5,7 @@ import { join } from 'path';
 import { readFileSync } from 'fs';
 import { CACHE_MANAGER, CacheStore } from '@nestjs/cache-manager';
 import { Inject } from '@nestjs/common';
+import { RoutePrefetchService } from './route-prefetch.config';
 
 @Injectable()
 export class SsrMiddleware implements NestMiddleware {
@@ -13,7 +14,10 @@ export class SsrMiddleware implements NestMiddleware {
   private distPath = join(__dirname, '..', '..', '..', 'client', 'dist');
   private srcPath = join(__dirname, '..', '..', '..', 'client');
 
-  constructor(@Inject(CACHE_MANAGER) private cacheManager: CacheStore) {}
+  constructor(
+    @Inject(CACHE_MANAGER) private cacheManager: CacheStore,
+    private readonly routePrefetchService: RoutePrefetchService,
+  ) {}
 
   async use(req: Request, res: Response, next: NextFunction) {
     const url = req.originalUrl;
@@ -41,8 +45,14 @@ export class SsrMiddleware implements NestMiddleware {
       let template: string;
       let render: (
         url: string,
-        manifest: any,
-      ) => Promise<{ html: string; ctx: any }>;
+        preloadData: any,
+      ) => Promise<{
+        html: string;
+        ctx: any;
+        headTags: string;
+        htmlAttrs: string;
+        bodyAttrs: string;
+      }>;
 
       if (!this.isProd) {
         if (!this.vite) {
@@ -67,8 +77,22 @@ export class SsrMiddleware implements NestMiddleware {
       }
 
       try {
-        const { html: appHtml, ctx } = await render(url, {});
-        const html = template.replace(`<!--ssr-outlet-->`, appHtml);
+        const prefetchData =
+          await this.routePrefetchService.getPrefetchData(url);
+        const {
+          html: appHtml,
+          ctx,
+          headTags,
+          htmlAttrs,
+          bodyAttrs,
+        } = await render(url, prefetchData);
+        const preloadStateScript = `<script>window.__PRELOAD_STATE__ = ${JSON.stringify(ctx.preloadState)}</script>`;
+        const html = template
+          .replace('<html>', `<html ${htmlAttrs}>`)
+          .replace('<body>', `<body ${bodyAttrs}>`)
+          .replace('</head>', `${headTags}</head>`)
+          .replace(`<!--ssr-outlet-->`, appHtml)
+          .replace(`<!--preload-state-->`, preloadStateScript);
         const renderedPage = html;
         res.status(200).set({ 'Content-Type': 'text/html' }).end(html);
 
