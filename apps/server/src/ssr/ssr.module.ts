@@ -3,6 +3,7 @@ import {
   Module,
   NestModule,
   RequestMethod,
+  OnModuleInit,
 } from '@nestjs/common';
 import { HttpModule } from '@nestjs/axios';
 import { SsrMiddleware } from './ssr.middleware';
@@ -19,7 +20,9 @@ import { RoutePrefetchService } from './route-prefetch.config';
   providers: [SsrMiddleware, RoutePrefetchService],
   exports: [SsrMiddleware, RoutePrefetchService],
 })
-export class SsrModule implements NestModule {
+export class SsrModule implements NestModule, OnModuleInit {
+  constructor(private readonly ssrMiddleware: SsrMiddleware) {}
+
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(SsrMiddleware)
@@ -31,5 +34,15 @@ export class SsrModule implements NestModule {
         path: '*',
         method: RequestMethod.GET, // 只处理 GET 请求
       });
+  }
+
+  async onModuleInit() {
+    // 在应用启动时清除所有 SSR 缓存
+    try {
+      await this.ssrMiddleware.clearCache();
+      console.log('SSR cache cleared on startup');
+    } catch (error) {
+      console.error('Failed to clear SSR cache on startup:', error);
+    }
   }
 }

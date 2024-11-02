@@ -56,7 +56,7 @@
               {{ dev.bio?.trim() }}
             </div>
             <div class="followers">
-              关注者: {{ dev.followers.toLocaleString() }}
+              关注者: {{ dev.followers?.toLocaleString() }}
             </div>
           </div>
         </div>
