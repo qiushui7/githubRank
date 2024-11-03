@@ -1,31 +1,57 @@
 <template>
   <div style="width: 100%">
-    <table style="width: 100%; margin-top: -1vh">
+    <div
+      style="
+        width: 55vw;
+        margin-top: -1vh;
+        height: 40vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      "
+      v-if="!show"
+    >
+      <div id="tiny-basic-loading1"></div>
+    </div>
+    <table style="width: 55vw; margin-top: -1vh" v-if="show">
       <thead>
         <tr>
           <th>Repo</th>
           <th>Title</th>
           <th>State</th>
-          <th>Created by</th>
           <th>Created at</th>
           <th>Latest update</th>
         </tr>
       </thead>
       <tbody>
         <tr v-for="item in LatestIssuesList">
-          <td>{{ item['Repo'] }}</td>
-          <td>{{ item['Title'] }}</td>
-          <td>{{ item['State'] }}</td>
-          <td>{{ item['Created by'] }}</td>
-          <td>{{ item['Created at'] }}</td>
-          <td>{{ item['Latest update'] }}</td>
+          <td>
+            {{
+              item['repository_url'].split('https://api.github.com/repos/')[1]
+            }}
+          </td>
+          <td>{{ item['title'] }}</td>
+          <td>{{ item['state'] }}</td>
+          <td>{{ item['created_at'] }}</td>
+          <td>{{ item['updated_at'] }}</td>
         </tr>
       </tbody>
     </table>
   </div>
 </template>
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
+import { TinyLoading, TinyButton } from '@opentiny/vue';
+
+const loadingInstance = ref(null);
+let show = ref(false);
+onMounted(() => {
+  loadingInstance.value = TinyLoading.service({
+    customClass: 'new-loading',
+    target: document.getElementById('tiny-basic-loading1'),
+    background: '#595959',
+  });
+});
 const LatestIssuesList = ref([
   {
     Repo: 'yyx990803/launch-editor',
@@ -36,6 +62,14 @@ const LatestIssuesList = ref([
     'Latest update': '5 Sep 2024',
   },
 ]);
+fetch('https://api.github.com/search/issues?q=user:yyx990803').then((res) =>
+  res.json().then((data) => {
+    console.log(data);
+    LatestIssuesList.value = data.items;
+    loadingInstance.value.close();
+    show.value = true;
+  }),
+);
 </script>
 <style scoped>
 table {
