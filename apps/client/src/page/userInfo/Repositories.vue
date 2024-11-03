@@ -2,7 +2,7 @@
   <div style="width: 100%">
     <div
       style="
-        width: 55vw;
+        width: 50vw;
         margin-top: -1vh;
         height: 40vh;
         display: flex;
@@ -13,7 +13,7 @@
     >
       <div id="tiny-basic-loading1"></div>
     </div>
-    <table style="width: 55vw; margin-top: -1vh" v-if="show">
+    <table style="width: 50vw; margin-top: -1vh" v-if="show">
       <thead>
         <tr>
           <th>Name</th>

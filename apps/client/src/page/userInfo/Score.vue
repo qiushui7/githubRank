@@ -2,8 +2,9 @@
   <div class="Score-container">
     <div class="Score-container-header">
       <div class="Score-container-header-left">
-        <span class="score">4.8</span><br />
-        <span class="total">共1382条评分</span>
+        <span class="score">{{ star }}</span
+        ><br />
+        <span class="total">共{{ scoreList.length }}条评分</span>
       </div>
       <div class="Score-container-header-right">
         <div class="Score-container-header-right-item">
@@ -12,7 +13,7 @@
           </div>
           <div style="flex: 1; margin-top: 12px">
             <tiny-progress
-              :percentage="75"
+              :percentage="totalstar.five"
               color="blue"
               :stroke-width="10"
               :show-text="false"
@@ -25,7 +26,7 @@
           </div>
           <div style="flex: 1; margin-top: 12px">
             <tiny-progress
-              :percentage="20"
+              :percentage="totalstar.four"
               color="blue"
               :stroke-width="10"
               :show-text="false"
@@ -38,7 +39,7 @@
           </div>
           <div style="flex: 1; margin-top: 12px">
             <tiny-progress
-              :percentage="3"
+              :percentage="totalstar.three"
               color="blue"
               :stroke-width="10"
               :show-text="false"
@@ -51,7 +52,7 @@
           </div>
           <div style="flex: 1; margin-top: 12px">
             <tiny-progress
-              :percentage="2"
+              :percentage="totalstar.two"
               color="blue"
               :stroke-width="10"
               :show-text="false"
@@ -64,7 +65,7 @@
           </div>
           <div style="flex: 1; margin-top: 12px">
             <tiny-progress
-              :percentage="1"
+              :percentage="totalstar.first"
               color="blue"
               :stroke-width="10"
               :show-text="false"
@@ -113,31 +114,40 @@
               <img :src="item.img" alt="" class="img" />
             </div>
             <div style="line-height: 20px; height: 50px; margin-left: 15px">
-              <span> {{ item.name }}</span
+              <span> {{ item.user_id }}</span
               ><br />
               <tiny-rate
-                :model-value="item.score"
+                :model-value="item.rating"
                 :max="5"
                 space="10px"
                 size="10px"
+                disabled
               ></tiny-rate>
             </div>
           </div>
           <div style="width: 50vw">
             <span>
-              {{ item.content }}
+              {{ item.message }}
             </span>
           </div>
           <div style="font-size: 10px; margin-top: 5px; color: #d3d3d3">
-            <span> {{ item.time }} | {{ item.position }} </span>
+            <span> {{ item.created_at }} </span>
           </div>
         </div>
         <div>
           <tiny-pager
             layout="prev, pager, next"
-            :total="20"
+            :total="scoreList"
             :pager-count="8"
+            :hide-on-single-page="true"
+            :current-page="page"
           ></tiny-pager>
+        </div>
+        <div
+          style="width: 50vw; height: 10vh; text-align: center; font-size: 40px"
+          v-if="scoreList.length == 0"
+        >
+          <span>空空如也</span>
         </div>
       </div>
     </div>
@@ -150,13 +160,12 @@ import {
   Button as TinyButton,
   TinyPager,
 } from '@opentiny/vue';
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, computed } from 'vue';
 onMounted(() => {
   const textarea = document.getElementById('myTextarea');
   function autoResize() {
     console.log(textarea.scrollHeight);
     textarea.style.height = 'auto';
-
     textarea.style.height = textarea.scrollHeight - 6 + 'px';
   }
   textarea.addEventListener('input', autoResize);
@@ -169,106 +178,81 @@ onMounted(() => {
     textarea.style.borderColor = originalBorderColor;
   });
 });
-let scoreList = ref([
-  {
-    img: 'https://tse1-mm.cn.bing.net/th/id/OIP-C.VnqbqHI999-VVVkUOWBcMwAAAA?w=209&h=209&c=7&r=0&o=5&dpr=1.3&pid=1.7',
-    score: 4,
-    name: '项久桢',
-    content:
-      'xd不用给挂了的搞成红色吧，这样每次第一眼都是看到醒目的挂了的，不会影响心情嘛，很多公司他就不招人，挂了也不是咱的问题。祝好哈',
-    time: '2024-08-08',
-    position: '四川',
-  },
-  {
-    img: 'https://tse1-mm.cn.bing.net/th/id/OIP-C.VnqbqHI999-VVVkUOWBcMwAAAA?w=209&h=209&c=7&r=0&o=5&dpr=1.3&pid=1.7',
-    score: 4,
-    name: '项久桢',
-    content:
-      'xd不用给挂了的搞成红色吧，这样每次第一眼都是看到醒目的挂了的，不会影响心情嘛，很多公司他就不招人，挂了也不是咱的问题。祝好哈',
-    time: '2024 -08-08',
-    position: '四川',
-  },
-  {
-    img: 'https://tse1-mm.cn.bing.net/th/id/OIP-C.VnqbqHI999-VVVkUOWBcMwAAAA?w=209&h=209&c=7&r=0&o=5&dpr=1.3&pid=1.7',
-    score: 4,
-    name: '项久桢',
-    content:
-      'xd不用给挂了的搞成红色吧，这样每次第一眼都是看到醒目的挂了的，不会影响心情嘛，很多公司他就不招人，挂了也不是咱的问题。祝好哈',
-    time: '2024-08-08',
-    position: '四川',
-  },
-  {
-    img: 'https://tse1-mm.cn.bing.net/th/id/OIP-C.VnqbqHI999-VVVkUOWBcMwAAAA?w=209&h=209&c=7&r=0&o=5&dpr=1.3&pid=1.7',
-    score: 4,
-    name: '项久桢',
-    content:
-      'xd不用给挂了的搞成红色吧，这样每次第一眼都是看到醒目的挂了的，不会影响心情嘛，很多公司他就不招人，挂了也不是咱的问题。祝好哈',
-    time: '2024-08-08',
-    position: '四川',
-  },
-  {
-    img: 'https://tse1-mm.cn.bing.net/th/id/OIP-C.VnqbqHI999-VVVkUOWBcMwAAAA?w=209&h=209&c=7&r=0&o=5&dpr=1.3&pid=1.7',
-    score: 4,
-    name: '项久桢',
-    content:
-      'xd不用给挂了的搞成红色吧，这样每次第一眼都是看到醒目的挂了的，不会影响心情嘛，很多公司他就不招人，挂了也不是咱的问题。祝好哈',
-    time: '2024-08-08',
-    position: '四川',
-  },
-  {
-    img: 'https://tse1-mm.cn.bing.net/th/id/OIP-C.VnqbqHI999-VVVkUOWBcMwAAAA?w=209&h=209&c=7&r=0&o=5&dpr=1.3&pid=1.7',
-    score: 4,
-    name: '项久桢',
-    content:
-      'xd不用给挂了的搞成红色吧，这样每次第一眼都是看到醒目的挂了的，不会影响心情嘛，很多公司他就不招人，挂了也不是咱的问题。祝好哈',
-    time: '2024-08-08',
-    position: '四川',
-  },
-  {
-    img: 'https://tse1-mm.cn.bing.net/th/id/OIP-C.VnqbqHI999-VVVkUOWBcMwAAAA?w=209&h=209&c=7&r=0&o=5&dpr=1.3&pid=1.7',
-    score: 4,
-    name: '项久桢',
-    content:
-      'xd不用给挂了的搞成红色吧，这样每次第一眼都是看到醒目的挂了的，不会影响心情嘛，很多公司他就不招人，挂了也不是咱的问题。祝好哈',
-    time: '2024-08-08',
-    position: '四川',
-  },
-  {
-    img: 'https://tse1-mm.cn.bing.net/th/id/OIP-C.VnqbqHI999-VVVkUOWBcMwAAAA?w=209&h=209&c=7&r=0&o=5&dpr=1.3&pid=1.7',
-    score: 4,
-    name: '项久桢',
-    content:
-      'xd不用给挂了的搞成红色吧，这样每次第一眼都是看到醒目的挂了的，不会影响心情嘛，很多公司他就不招人，挂了也不是咱的问题。祝好哈',
-    time: '2024-08-08',
-    position: '四川',
-  },
-]);
+let scoreList = ref([]);
+let page = ref(1);
+let pageList = computed(() => {
+  return scoreList.value.slice((page.value - 1) * 8, page.value * 8);
+});
+let totalstar = computed(() => {
+  let obj = {
+    first: 0,
+    two: 0,
+    three: 0,
+    four: 0,
+    five: 0,
+  };
+  let total = scoreList.value.length;
+  if (total == 0) {
+    return obj;
+  }
+  obj.first =
+    Math.floor(
+      scoreList.value.filter((item) => item.point == '1').length / total,
+    ) * 100;
+  obj.two =
+    Math.floor(
+      scoreList.value.filter((item) => item.point == '2').length / total,
+    ) * 100;
+  obj.three =
+    Math.floor(
+      scoreList.value.filter((item) => item.point == '3').length / total,
+    ) * 100;
+  obj.four =
+    Math.floor(
+      scoreList.value.filter((item) => item.point == '4').length / total,
+    ) * 100;
+  obj.five =
+    Math.floor(
+      scoreList.value.filter((item) => item.point == '5').length / total,
+    ) * 100;
+  return obj;
+});
+let star = computed(() => {
+  if (scoreList.value.length == 0) {
+    return 0;
+  }
+  let num = scoreList.value.reduce((pre, cur) => pre + parseInt(cur.point), 0);
+  return num / scoreList.value.length;
+});
 let userScore = ref(0);
 let userValue = ref('');
 let uploadScore = async () => {
-  let form = new FormData();
-  let utcDate = new Date();
-  let offsetInHours = 8;
-  let chinaDate = new Date(utcDate.getTime());
-  let year = chinaDate.getFullYear();
-  let month = chinaDate.getMonth() + 1;
-  let day = chinaDate.getDate();
-  let hour = chinaDate.getHours();
-  form.append('score', userScore);
-  form.append('content', userValue);
-  form.append('time', `${year}-${month}-${day}`);
-  let position = '未知地区';
-  await fetch('http://ip-api.com/json')
-    .then((response) => response.json())
-    .then((data) => {
-      console.log(data);
-      console.log('国家：', data.country);
-      console.log('地区：', data.regionName);
-      position = data.regionName;
-    })
-    .catch((error) => console.error('IP地理定位出错：', error));
-  console.log(year, month, day, hour);
+  if (userScore.value == 0 || userValue.value == '') {
+    alert('请输入评论或评分');
+    return;
+  }
+  let id = window.location.href.split('/')[4];
+  let form = {};
+  form['github_id'] = id;
+  form['point'] = userScore.value;
+  form['message'] = userValue.value;
+  form['user'] = '123456';
+  fetch('/api/user/appraise', {
+    method: 'post',
+    body: form,
+  }).then((res) =>
+    res.json().then((data) => {
+      form.rating = form.point;
+      scoreList.value.push(form);
+      alert('评论成功');
+    }),
+  );
 };
+fetch('/api/user/getAppraise?github_id=yyx990803').then((res) =>
+  res.json().then((data) => {
+    scoreList.value = data;
+  }),
+);
 </script>
 <style scoped lang="less">
 .Score-container {
