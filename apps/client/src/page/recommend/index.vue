@@ -2,16 +2,16 @@
   <div class="recommend-container">
     <div class="header">
       <div class="title-section">
-        <h1 class="title">Trending</h1>
+        <h1 class="title">{{ t('recommend.trend.title') }}</h1>
         <p class="subtitle">
-          These are the developers building the hot tools today.
+          {{ t('recommend.trend.description') }}
         </p>
       </div>
       <div class="filter-section">
         <select v-model="selectedPeriod" class="period-filter">
-          <option value="daily">Today</option>
-          <option value="weekly">This Week</option>
-          <option value="monthly">This Month</option>
+          <option value="daily">{{ t('recommend.period.daily') }}</option>
+          <option value="weekly">{{ t('recommend.period.weekly') }}</option>
+          <option value="monthly">{{ t('recommend.period.monthly') }}</option>
         </select>
       </div>
     </div>
@@ -56,7 +56,8 @@
               {{ dev.bio?.trim() }}
             </div>
             <div class="followers">
-              关注者: {{ dev.followers?.toLocaleString() }}
+              {{ t('recommend.followers') }}:
+              {{ dev.followers?.toLocaleString() }}
             </div>
           </div>
         </div>
@@ -71,14 +72,17 @@ import { useHead } from '@unhead/vue';
 import { ref, onMounted, watch, inject } from 'vue';
 import { getRecommendDevelopers } from '../../service/recommend';
 import type { PreloadStore } from '../../utils/preload';
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 useHead({
-  title: 'GitHub Rank - 推荐开发者',
+  title: t('recommend.title'),
   meta: [
-    { name: 'description', content: '发现优秀的GitHub开发者' },
-    { property: 'og:title', content: 'GitHub Rank - 推荐开发者' },
-    { property: 'og:description', content: '发现优秀的GitHub开发者' },
-    { name: 'keywords', content: 'GitHub,开发者,排名,推荐' },
+    { name: 'description', content: t('recommend.description') },
+    { property: 'og:title', content: t('recommend.title') },
+    { property: 'og:description', content: t('recommend.description') },
+    { name: 'keywords', content: t('recommend.keywords') },
   ],
   link: [{ rel: 'canonical', href: import.meta.env.VITE_BASE_URL }],
 });
