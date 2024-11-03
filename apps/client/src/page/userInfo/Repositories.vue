@@ -1,6 +1,19 @@
 <template>
   <div style="width: 100%">
-    <table style="width: 55vw; margin-top: -1vh">
+    <div
+      style="
+        width: 55vw;
+        margin-top: -1vh;
+        height: 40vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      "
+      v-if="!show"
+    >
+      <div id="tiny-basic-loading1"></div>
+    </div>
+    <table style="width: 55vw; margin-top: -1vh" v-if="show">
       <thead>
         <tr>
           <th>Name</th>
@@ -27,17 +40,23 @@
   </div>
 </template>
 <script setup lang="ts">
-import { ref } from 'vue';
-interface UserInfo {
-  repos_url: string;
-}
-let reposUrl = defineProps<{
-  userInfo: UserInfo;
-}>();
+import { ref, onMounted } from 'vue';
+import { TinyLoading, TinyButton } from '@opentiny/vue';
+const loadingInstance = ref(null);
+let show = ref(false);
+onMounted(() => {
+  loadingInstance.value = TinyLoading.service({
+    customClass: 'new-loading',
+    target: document.getElementById('tiny-basic-loading1'),
+    background: '#595959',
+  });
+});
 let RepositoriesList = ref([]);
-fetch(`${reposUrl.userInfo.repos_url}`).then((res) =>
+fetch(`https://api.github.com/users/yyx990803/repos`).then((res) =>
   res.json().then((data) => {
+    console.log(data);
     RepositoriesList.value = data;
+    show.value = true;
   }),
 );
 </script>
