@@ -1,8 +1,13 @@
 <template>
-  <button @click="login" class="github-login-button">使用 GitHub 登录</button>
+  <button @click="login" class="github-login-button">
+    {{ t('nav.login') }}
+  </button>
 </template>
 
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 const redirectUri = import.meta.env.VITE_GITHUB_CALLBACK_URL;
 const clientId = import.meta.env.VITE_GITHUB_CLIENT_ID;
 

@@ -9,6 +9,8 @@ export async function render(url: string, preloadData: any, manifest: any) {
 
   const router = createVueRouter('server');
 
+  app.config.globalProperties.$i18n.locale = 'en';
+
   app.use(router);
 
   // 设置服务器端路由位置
@@ -33,9 +35,6 @@ export async function render(url: string, preloadData: any, manifest: any) {
 
 /**
  * 解析需要预加载的链接
- * @param modules
- * @param manifest
- * @returns string
  */
 function renderPreloadLinks(
   modules: undefined | string[],
@@ -44,7 +43,7 @@ function renderPreloadLinks(
   let links = '';
   const seen = new Set();
   if (modules === undefined) throw new Error();
-  modules.forEach((id) => {
+  modules?.forEach((id) => {
     const files: any = manifest[id];
     if (files) {
       links += renderPreloadLink(files.file);
@@ -62,8 +61,6 @@ function renderPreloadLinks(
 /**
  * 预加载的对应的地址
  * 下面的方法只针对了 js 和 css，如果需要处理其它文件，自行添加即可
- * @param file
- * @returns string
  */
 function renderPreloadLink(file: string): string {
   if (file.endsWith('.js')) {
