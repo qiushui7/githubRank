@@ -9,28 +9,30 @@
     </div>
 
     <!-- 排名图表 -->
-    <div class="charts-section">
-      <div class="charts-row">
-        <div class="chart-container languages-chart">
-          <div class="chart-title">Languages</div>
-          <v-chart class="chart" :option="languagesOption" autoresize />
+    <ClientOnly>
+      <div class="charts-section">
+        <div class="charts-row">
+          <div class="chart-container languages-chart">
+            <div class="chart-title">Languages</div>
+            <v-chart class="chart" :option="languagesOption" autoresize />
+          </div>
+          <div class="chart-container">
+            <div class="chart-title">Issues Ranking</div>
+            <v-chart class="chart" :option="issuesOption" autoresize />
+          </div>
         </div>
-        <div class="chart-container">
-          <div class="chart-title">Issues Ranking</div>
-          <v-chart class="chart" :option="issuesOption" autoresize />
+        <div class="charts-row">
+          <div class="chart-container">
+            <div class="chart-title">Forks Ranking</div>
+            <v-chart class="chart" :option="forksOption" autoresize />
+          </div>
+          <div class="chart-container">
+            <div class="chart-title">Stars Ranking</div>
+            <v-chart class="chart" :option="starsOption" autoresize />
+          </div>
         </div>
       </div>
-      <div class="charts-row">
-        <div class="chart-container">
-          <div class="chart-title">Forks Ranking</div>
-          <v-chart class="chart" :option="forksOption" autoresize />
-        </div>
-        <div class="chart-container">
-          <div class="chart-title">Stars Ranking</div>
-          <v-chart class="chart" :option="starsOption" autoresize />
-        </div>
-      </div>
-    </div>
+    </ClientOnly>
   </div>
 </template>
 
@@ -46,6 +48,7 @@ import {
   LegendComponent,
   GridComponent,
 } from 'echarts/components';
+import ClientOnly from '@duannx/vue-client-only';
 
 // 注册必要的组件
 use([

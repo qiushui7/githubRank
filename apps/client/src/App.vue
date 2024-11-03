@@ -1,8 +1,6 @@
 <template>
   <div class="app-container">
-    <ClientOnly>
-      <GlassNavbar :changeTheme="changeTheme" />
-    </ClientOnly>
+    <GlassNavbar :changeTheme="changeTheme" />
     <main class="main-content">
       <router-view></router-view>
     </main>
@@ -12,7 +10,7 @@
 <script setup lang="ts">
 import { provide, ref, onBeforeMount } from 'vue';
 import GlassNavbar from './components/GlassNavbar.vue';
-import ClientOnly from '@duannx/vue-client-only';
+import { createAuthStore } from './utils/useAuthStore';
 
 const isDarkTheme = ref(false);
 provide('isDarkTheme', isDarkTheme);
@@ -27,6 +25,9 @@ onBeforeMount(() => {
   isDarkTheme.value = theme;
   document.body.classList.toggle('dark-theme', theme);
 });
+
+const authStore = createAuthStore();
+provide('authStore', authStore);
 </script>
 
 <style>

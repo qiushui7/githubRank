@@ -37,7 +37,7 @@
       <div v-for="dev in developers" :key="dev.id" class="developer-card">
         <div class="card-content">
           <div class="avatar-container">
-            <img :src="dev.avatar" :alt="dev.name" class="avatar" />
+            <img v-lazy="dev.avatar" :alt="dev.name" class="avatar" />
           </div>
 
           <div class="info">
@@ -52,9 +52,11 @@
                 @{{ dev.username }}
               </a>
             </div>
-            <p class="bio">{{ dev.bio }}</p>
+            <div class="bio" :title="dev.bio?.trim()">
+              {{ dev.bio?.trim() }}
+            </div>
             <div class="followers">
-              关注者: {{ dev.followers.toLocaleString() }}
+              关注者: {{ dev.followers?.toLocaleString() }}
             </div>
           </div>
         </div>
@@ -65,7 +67,21 @@
 
 <script setup lang="ts">
 import ClientOnly from '@duannx/vue-client-only';
-import { ref, onMounted, watch } from 'vue';
+import { useHead } from '@unhead/vue';
+import { ref, onMounted, watch, inject } from 'vue';
+import { getRecommendDevelopers } from '../../service/recommend';
+import type { PreloadStore } from '../../utils/preload';
+
+useHead({
+  title: 'GitHub Rank - 推荐开发者',
+  meta: [
+    { name: 'description', content: '发现优秀的GitHub开发者' },
+    { property: 'og:title', content: 'GitHub Rank - 推荐开发者' },
+    { property: 'og:description', content: '发现优秀的GitHub开发者' },
+    { name: 'keywords', content: 'GitHub,开发者,排名,推荐' },
+  ],
+  link: [{ rel: 'canonical', href: import.meta.env.VITE_BASE_URL }],
+});
 
 interface Developer {
   id: number;
@@ -78,131 +94,19 @@ interface Developer {
   followers: number;
 }
 
+const preloadStore = inject<PreloadStore>('preloadStore')!;
+
 const developers = ref<Developer[]>([]);
-const isLoading = ref(true);
+
+const isLoading = ref(false);
 
 const selectedPeriod = ref('daily');
-
-const mockDevelopers: Developer[] = [
-  {
-    id: 1,
-    name: '尤雨溪',
-    username: 'yyx990803',
-    avatar: 'https://avatars.githubusercontent.com/u/499550',
-    country: '美国',
-    countryCode: 'US',
-    bio: 'Vue.js 创始人',
-    followers: 78500,
-  },
-  {
-    id: 2,
-    name: '尤雨溪',
-    username: 'yyx990803',
-    avatar: 'https://avatars.githubusercontent.com/u/499550',
-    country: '美国',
-    countryCode: 'US',
-    bio: 'Vue.js 创始人',
-    followers: 78500,
-  },
-  {
-    id: 3,
-    name: '尤雨溪',
-    username: 'yyx990803',
-    avatar: 'https://avatars.githubusercontent.com/u/499550',
-    country: '美国',
-    countryCode: 'US',
-    bio: 'Vue.js 创始人',
-    followers: 78500,
-  },
-  {
-    id: 4,
-    name: '尤雨溪',
-    username: 'yyx990803',
-    avatar: 'https://avatars.githubusercontent.com/u/499550',
-    country: '美国',
-    countryCode: 'US',
-    bio: 'Vue.js 创始人',
-    followers: 78500,
-  },
-  {
-    id: 5,
-    name: '尤雨溪',
-    username: 'yyx990803',
-    avatar: 'https://avatars.githubusercontent.com/u/499550',
-    country: '美国',
-    countryCode: 'US',
-    bio: 'Vue.js 创始人',
-    followers: 78500,
-  },
-  {
-    id: 6,
-    name: '尤雨溪',
-    username: 'yyx990803',
-    avatar: 'https://avatars.githubusercontent.com/u/499550',
-    country: '美国',
-    countryCode: 'US',
-    bio: 'Vue.js 创始人',
-    followers: 78500,
-  },
-  {
-    id: 7,
-    name: '尤雨溪',
-    username: 'yyx990803',
-    avatar: 'https://avatars.githubusercontent.com/u/499550',
-    country: '美国',
-    countryCode: 'US',
-    bio: 'Vue.js 创始人',
-    followers: 78500,
-  },
-  {
-    id: 8,
-    name: '尤雨溪',
-    username: 'yyx990803',
-    avatar: 'https://avatars.githubusercontent.com/u/499550',
-    country: '美国',
-    countryCode: 'US',
-    bio: 'Vue.js 创始人',
-    followers: 78500,
-  },
-  {
-    id: 9,
-    name: '尤雨溪',
-    username: 'yyx990803',
-    avatar: 'https://avatars.githubusercontent.com/u/499550',
-    country: '美国',
-    countryCode: 'US',
-    bio: 'Vue.js 创始人',
-    followers: 78500,
-  },
-  {
-    id: 10,
-    name: '尤雨溪',
-    username: 'yyx990803',
-    avatar: 'https://avatars.githubusercontent.com/u/499550',
-    country: '美国',
-    countryCode: 'US',
-    bio: 'Vue.js 创始人',
-    followers: 78500,
-  },
-  {
-    id: 11,
-    name: '尤雨溪',
-    username: 'yyx990803',
-    avatar: 'https://avatars.githubusercontent.com/u/499550',
-    country: '美国',
-    countryCode: 'US',
-    bio: 'Vue.js 创始人',
-    followers: 78500,
-  },
-  // 可以添加更多开发者数据
-];
 
 const fetchDevelopers = async () => {
   isLoading.value = true;
   try {
-    // 实际项目中这里应该根据 selectedPeriod.value 调用API
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    developers.value = mockDevelopers;
+    const response = await getRecommendDevelopers(selectedPeriod.value);
+    developers.value = response.data;
   } finally {
     isLoading.value = false;
   }
@@ -212,8 +116,15 @@ watch(selectedPeriod, () => {
   fetchDevelopers();
 });
 
-onMounted(() => {
-  fetchDevelopers();
+if (preloadStore.state.recommendDevelopers?.length) {
+  developers.value = preloadStore.state.recommendDevelopers as Developer[];
+  isLoading.value = false;
+}
+
+onMounted(async () => {
+  if (!preloadStore.state.recommendDevelopers?.length) {
+    await fetchDevelopers();
+  }
 });
 </script>
 
@@ -290,8 +201,15 @@ onMounted(() => {
 .avatar {
   width: 100px;
   height: 100px;
+  border-radius: 50%;
   object-fit: cover;
-  transition: transform 0.3s ease;
+  /* 添加淡入效果 */
+  transition: opacity 0.3s ease-in-out;
+}
+
+/* 图片加载时的状态 */
+.avatar[src^='data:image/svg'] {
+  opacity: 0.6;
 }
 
 .avatar:hover {
@@ -317,6 +235,7 @@ onMounted(() => {
 }
 
 .country-flag {
+  color: var(--text-color);
   font-size: 1.2rem;
 }
 
@@ -331,9 +250,17 @@ onMounted(() => {
 }
 
 .bio {
-  font-size: 0.9rem;
+  display: -webkit-box;
+  line-clamp: 2;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.5;
+  margin: 8px 0;
   color: var(--text-color);
-  margin: 0.5rem 0;
+  font-size: 0.9rem;
+  cursor: help; /* 添加提示光标 */
 }
 
 .followers {

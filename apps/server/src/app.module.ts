@@ -1,10 +1,15 @@
-import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
+import {
+  Module,
+  NestModule,
+  MiddlewareConsumer,
+  RequestMethod,
+} from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
-import { SsrMiddleware } from './ssr/ssr.middleware';
 import { AuthModule } from './auth/auth.module';
 import { RedisCacheModule } from './cache/redis-cache.module';
-
+import { SsrModule } from './ssr/ssr.module';
+import { ProxyMiddleware } from './proxy/proxy.middleware';
 
 @Module({
   imports: [
@@ -13,15 +18,17 @@ import { RedisCacheModule } from './cache/redis-cache.module';
     }),
     AuthModule,
     RedisCacheModule,
+    SsrModule,
   ],
   controllers: [AppController],
-  providers: [SsrMiddleware],
+  providers: [ProxyMiddleware],
+  exports: [ProxyMiddleware],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer
-      .apply(SsrMiddleware)
-      .exclude('api/(.*)')  // 排除所有以 /api 开头的路由
-      .forRoutes('*');
+    consumer.apply(ProxyMiddleware).forRoutes({
+      path: 'service/(.*)',
+      method: RequestMethod.ALL,
+    });
   }
 }

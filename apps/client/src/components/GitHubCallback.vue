@@ -3,16 +3,17 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue';
+import { onMounted, inject } from 'vue';
 import { useRouter } from 'vue-router';
-import { setToken } from '../service/auth';
+import type { AuthStore } from '../utils/useAuthStore';
 
 const router = useRouter();
+const authStore = inject<AuthStore>('authStore')!;
 
 onMounted(async () => {
-  const code = new URLSearchParams(window.location.search).get('code');
-  if (code) {
-    try {
+  try {
+    const code = new URLSearchParams(window.location.search).get('code');
+    if (code) {
       const response = await fetch('/api/auth/github/callback', {
         method: 'POST',
         headers: {
@@ -21,17 +22,17 @@ onMounted(async () => {
         body: JSON.stringify({ code }),
       });
       const data = await response.json();
+
       if (data.access_token) {
-        setToken(data.access_token);
-        localStorage.setItem('user_info', JSON.stringify(data.user));
+        const userInfo = data.user;
+        userInfo.access_token = data.access_token;
+        await authStore.updateAuth(userInfo);
         router.push('/');
-      } else {
-        throw new Error('Failed to get access token');
       }
-    } catch (error) {
-      console.error('GitHub login error:', error);
-      router.push('/login-error');
     }
+  } catch (error) {
+    console.error('GitHub callback error:', error);
+    router.push('/');
   }
 });
 </script>

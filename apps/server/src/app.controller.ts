@@ -1,13 +1,17 @@
 import { Controller, All, Req, Res, Next } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
-import { SsrMiddleware } from './ssr/ssr.middleware';
+import { ProxyMiddleware } from './proxy/proxy.middleware';
 
 @Controller()
 export class AppController {
-  constructor(private readonly ssrMiddleware: SsrMiddleware) {}
+  constructor(private readonly proxyMiddleware: ProxyMiddleware) {}
 
-  @All('*')
-  async handleAll(@Req() req: Request, @Res() res: Response, @Next() next: NextFunction) {
-    await this.ssrMiddleware.use(req, res, next);
+  @All('service/*')
+  async handleAll(
+    @Req() req: Request,
+    @Res() res: Response,
+    @Next() next: NextFunction,
+  ) {
+    await this.proxyMiddleware.use(req, res, next);
   }
 }

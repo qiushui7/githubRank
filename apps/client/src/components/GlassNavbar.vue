@@ -1,11 +1,13 @@
 <template>
   <div class="navbar-container">
-    <nav class="glass-navbar" :class="{ 'dark-theme': isDarkTheme }">
+    <nav class="glass-navbar">
       <div class="nav-content">
-        <div class="logo-container" @click="goHome">
-          <img :src="currentLogo" alt="github" class="logo" />
-          <span class="site-name">GitHub Rank</span>
-        </div>
+        <ClientOnly>
+          <div class="logo-container" @click="goHome">
+            <img :src="currentLogo" alt="github" class="logo" />
+            <span class="site-name">GitHub Rank</span>
+          </div>
+        </ClientOnly>
         <div class="search-container">
           <input
             type="text"
@@ -18,18 +20,29 @@
         <div class="right-container">
           <div class="login-container">
             <template v-if="isAuth">
-              <img
-                :src="userInfo.avatar_url"
-                :alt="userInfo.login"
-                class="github-avatar"
-              />
+              <div class="avatar-dropdown">
+                <img
+                  :src="userInfo.avatar_url"
+                  :alt="userInfo.login"
+                  class="github-avatar"
+                />
+                <div class="dropdown-menu">
+                  <div class="user-info">
+                    <span>{{ userInfo.login }}</span>
+                  </div>
+                  <div class="divider"></div>
+                  <div class="menu-item" @click="handleLogout">退出登录</div>
+                </div>
+              </div>
             </template>
             <template v-else>
               <GitHubLogin class="nav-item" />
             </template>
-            <button @click="toggleTheme" class="theme-toggle">
-              {{ isDarkTheme ? '🌞' : '🌙' }}
-            </button>
+            <ClientOnly>
+              <button @click="toggleTheme" class="theme-toggle">
+                {{ isDarkTheme ? '🌞' : '🌙' }}
+              </button>
+            </ClientOnly>
           </div>
         </div>
       </div>
@@ -40,10 +53,11 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, inject, Ref } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
-import { isAuthenticated } from '../service/auth';
+import ClientOnly from '@duannx/vue-client-only';
 import GitHubLogin from './GitHubLogin.vue';
 import githubMark from '../assets/github-mark.svg';
 import githubMarkWhite from '../assets/github-mark-white.svg';
+import type { AuthStore } from '../utils/useAuthStore';
 
 // 定义 props
 const props = defineProps<{
@@ -53,11 +67,6 @@ const props = defineProps<{
 const githubIcon = [githubMark, githubMarkWhite];
 
 const isDarkTheme = inject<Ref<boolean>>('isDarkTheme', ref(false));
-const isAuth = ref(false);
-const userInfo = ref<{ avatar_url: string; login: string }>({
-  avatar_url: '',
-  login: '',
-});
 const router = useRouter();
 const route = useRoute();
 const searchQuery = ref('');
@@ -75,9 +84,12 @@ const goHome = () => {
   router.push('/');
 };
 
+const authStore = inject<AuthStore>('authStore')!;
+const isAuth = computed(() => authStore.isAuth.value);
+const userInfo = computed(() => authStore.userInfo.value);
+
 onMounted(async () => {
-  isAuth.value = await isAuthenticated();
-  userInfo.value = JSON.parse(localStorage.getItem('user_info') || '{}');
+  await authStore.checkAuthStatus();
 });
 
 // 处理搜索
@@ -97,6 +109,12 @@ onMounted(() => {
     searchQuery.value = route.query.keyword as string;
   }
 });
+
+// 修改退出登录处理函数
+const handleLogout = async () => {
+  authStore.clearAuth();
+  router.push('/');
+};
 </script>
 
 <style scoped>
@@ -225,7 +243,6 @@ onMounted(() => {
   height: 40px;
   border-radius: 50%;
   cursor: pointer;
-  margin-right: 10px;
 }
 
 .navbar-container {
@@ -237,5 +254,85 @@ onMounted(() => {
   display: flex;
   justify-content: center;
   margin: 0 auto;
+}
+
+.avatar-dropdown {
+  position: relative;
+  margin-right: 10px;
+}
+
+.avatar-dropdown:hover .dropdown-menu {
+  display: block;
+}
+
+.dropdown-menu {
+  display: none;
+  position: absolute;
+  top: calc(100%);
+  right: 50%;
+  transform: translateX(50%);
+  background: var(--bg-color);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  box-shadow: 0 8px 32px var(--shadow-color);
+  z-index: 1000;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.dropdown-menu::before,
+.dropdown-menu::after {
+  content: '';
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 8px solid transparent;
+}
+
+.dropdown-menu::before {
+  border-bottom-color: var(--border-color);
+  margin-bottom: 0;
+}
+
+.dropdown-menu::after {
+  border-bottom-color: var(--bg-color);
+  margin-bottom: -1px;
+}
+
+.user-info {
+  padding: 16px;
+  font-weight: 600;
+  color: var(--text-color);
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.divider {
+  height: 1px;
+  background-color: var(--border-color);
+  margin: 0;
+}
+
+.menu-item {
+  padding: 12px 16px;
+  color: var(--text-color);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.menu-item:hover {
+  background-color: var(--hover-bg-color);
+}
+
+.menu-item:last-child {
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
 }
 </style>
