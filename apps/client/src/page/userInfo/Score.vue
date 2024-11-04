@@ -2,7 +2,7 @@
   <div class="Score-container">
     <div class="Score-container-header">
       <div class="Score-container-header-left">
-        <span class="score">{{ star }}</span
+        <span class="score">{{ star.toFixed(1) }}</span
         ><br />
         <span class="total">共{{ scoreList.length }}条评分</span>
       </div>
@@ -191,30 +191,36 @@ let totalstar = computed(() => {
     four: 0,
     five: 0,
   };
-  let total = scoreList.value.length;
-  if (total == 0) {
+  console.log(scoreList.value.length);
+  if (scoreList.value.length == 0) {
     return obj;
   }
-  obj.first =
-    Math.floor(
-      scoreList.value.filter((item) => item.point == '1').length / total,
-    ) * 100;
-  obj.two =
-    Math.floor(
-      scoreList.value.filter((item) => item.point == '2').length / total,
-    ) * 100;
-  obj.three =
-    Math.floor(
-      scoreList.value.filter((item) => item.point == '3').length / total,
-    ) * 100;
-  obj.four =
-    Math.floor(
-      scoreList.value.filter((item) => item.point == '4').length / total,
-    ) * 100;
-  obj.five =
-    Math.floor(
-      scoreList.value.filter((item) => item.point == '5').length / total,
-    ) * 100;
+  obj.first = Math.floor(
+    (scoreList.value.filter((item) => item.point == '1').length /
+      scoreList.value.length) *
+      100,
+  );
+  obj.two = Math.floor(
+    (scoreList.value.filter((item) => item.point == '2').length /
+      scoreList.value.length) *
+      100,
+  );
+  obj.three = Math.floor(
+    (scoreList.value.filter((item) => item.point == '3').length /
+      scoreList.value.length) *
+      100,
+  );
+  obj.four = Math.floor(
+    (scoreList.value.filter((item) => item.point == '4').length /
+      scoreList.value.length) *
+      100,
+  );
+  obj.five = Math.floor(
+    (scoreList.value.filter((item) => item.point == '5').length /
+      scoreList.value.length) *
+      100,
+  );
+  console.log(obj);
   return obj;
 });
 let star = computed(() => {
@@ -236,13 +242,14 @@ let uploadScore = async () => {
   form['github_id'] = id;
   form['point'] = userScore.value;
   form['message'] = userValue.value;
-  form['user'] = '123456';
+  form['user'] = '未知用户';
   fetch('/api/user/appraise', {
     method: 'post',
     body: form,
   }).then((res) =>
     res.json().then((data) => {
       form.rating = form.point;
+      form.user_id = form['user'];
       scoreList.value.push(form);
       alert('评论成功');
     }),
