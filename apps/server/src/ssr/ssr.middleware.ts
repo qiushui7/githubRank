@@ -23,7 +23,6 @@ export class SsrMiddleware implements NestMiddleware {
   async use(req: Request, res: Response, next: NextFunction) {
     const url = req.originalUrl;
     const cacheKey = `ssr:${url}`;
-
     // 只在生产环境使用缓存
     if (this.isProd) {
       // 尝试从缓存中获取页面
@@ -38,7 +37,11 @@ export class SsrMiddleware implements NestMiddleware {
     }
 
     // 如果请求路径以 /api 开头，直接调用 next() 跳过 SSR 处理
-    if (req.path.startsWith('/api') || req.path.startsWith('/service')) {
+    if (
+      req.path.startsWith('/api') ||
+      req.path.startsWith('/service') ||
+      req.path.includes('/assets')
+    ) {
       return next();
     }
 
@@ -92,6 +95,7 @@ export class SsrMiddleware implements NestMiddleware {
           bodyAttrs,
           preloadLinks,
         } = await render(url, prefetchData, manifest);
+
         const preloadStateScript = `<script>window.__PRELOAD_STATE__ = ${JSON.stringify(ctx.preloadState)}</script>`;
         const html = template
           .replace(`<!--preload-links-->`, preloadLinks)

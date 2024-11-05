@@ -20,6 +20,6 @@ export function createApp() {
   app.provide('preloadStore', preloadStore);
   // 使用 lazyLoad 指令
   app.directive('lazy', lazyLoad);
-
+  app.config.globalProperties.$i18n.locale = 'en';
   return { app, preloadStore, head };
 }

@@ -14,6 +14,7 @@ export class ProxyMiddleware implements NestMiddleware {
 
   use(req: Request, res: Response, next: NextFunction) {
     if (req.path.startsWith('/service')) {
+      console.log(req.cookies);
       return this.proxy(req, res, next);
     }
     next();

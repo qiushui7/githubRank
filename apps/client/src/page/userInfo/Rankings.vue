@@ -13,22 +13,22 @@
       <div class="charts-section">
         <div class="charts-row">
           <div class="chart-container languages-chart">
-            <div class="chart-title">Languages</div>
-            <v-chart class="chart" :option="languagesOption" autoresize />
+            <div class="chart-title">Main Languages</div>
+            <v-chart class="chart" :option="languagesOption" />
           </div>
           <div class="chart-container">
             <div class="chart-title">Issues Ranking</div>
-            <v-chart class="chart" :option="issuesOption" autoresize />
+            <v-chart class="chart" :option="issuesOption" />
           </div>
         </div>
         <div class="charts-row">
           <div class="chart-container">
             <div class="chart-title">Forks Ranking</div>
-            <v-chart class="chart" :option="forksOption" autoresize />
+            <v-chart class="chart" :option="forksOption" />
           </div>
           <div class="chart-container">
             <div class="chart-title">Stars Ranking</div>
-            <v-chart class="chart" :option="starsOption" autoresize />
+            <v-chart class="chart" :option="starsOption" />
           </div>
         </div>
       </div>
@@ -37,8 +37,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, inject, computed, Ref } from 'vue';
-import VChart from 'vue-echarts';
+import {
+  ref,
+  inject,
+  computed,
+  Ref,
+  defineAsyncComponent,
+  reactive,
+} from 'vue';
 import { use } from 'echarts/core';
 import { CanvasRenderer } from 'echarts/renderers';
 import { PieChart, BarChart } from 'echarts/charts';
@@ -49,26 +55,57 @@ import {
   GridComponent,
 } from 'echarts/components';
 import ClientOnly from '@duannx/vue-client-only';
+import { fetchTopLanguages } from '../../service/github';
+import { useRoute } from 'vue-router';
+
+interface LanguageItem {
+  name: string;
+  size: number;
+  color: string;
+  count: number;
+}
+
+const VChart = defineAsyncComponent(() =>
+  import('vue-echarts').then((mod) => {
+    if (typeof window !== 'undefined') {
+      return mod;
+    }
+    return { render: () => null };
+  }),
+);
 
 // 注册必要的组件
-use([
-  CanvasRenderer,
-  PieChart,
-  BarChart,
-  TitleComponent,
-  TooltipComponent,
-  LegendComponent,
-  GridComponent,
-]);
+if (import.meta.env.SSR === false) {
+  use([
+    CanvasRenderer,
+    PieChart,
+    BarChart,
+    TitleComponent,
+    TooltipComponent,
+    LegendComponent,
+    GridComponent,
+  ]);
+}
+
+const github_id = computed(() => useRoute().params.id);
+const getTopLanguages = async () => {
+  const res = await fetchTopLanguages(github_id.value as string);
+  console.log('fetchTopLanguages', res);
+  languagesData.value = Object.values(res);
+  totalData['Languages'] = languagesData.value?.length || 0;
+};
+if (typeof window !== 'undefined') {
+  getTopLanguages();
+}
 
 const isDarkTheme = inject<Ref<boolean>>('isDarkTheme', ref(false));
 // 总览数据
-const totalData = {
+const totalData = reactive<Record<string, number>>({
   'Pushed to repos': 92,
-  'Main languages': 11,
+  Languages: 11,
   'Total issues': 192,
   'Total forks': 1707,
-};
+});
 const formatNumber = (value: number) => {
   return value.toLocaleString();
 };
@@ -123,32 +160,24 @@ const commonChartConfig = computed(() => ({
   },
 }));
 
+const languagesData = ref<LanguageItem[]>();
 // 语言统计图表配置
 const languagesOption = computed(() => ({
-  tooltip: {
-    trigger: 'item',
-    formatter: '{b}: {c} ({d}%)',
-  },
-  legend: {
-    orient: 'vertical',
-    left: 'left',
-    textStyle: {
-      color: themeColors.value.textColor,
-    },
+  ...commonChartConfig.value,
+  xAxis: {
+    ...commonChartConfig.value.xAxis,
+    data: languagesData.value?.map((item: LanguageItem) => item.name) || [],
   },
   series: [
     {
-      type: 'pie',
-      radius: '50%',
-      label: {
-        color: themeColors.value.textColor,
+      data:
+        languagesData.value?.map((item: LanguageItem) => {
+          return item.size / 10000;
+        }) || [],
+      type: 'bar',
+      itemStyle: {
+        color: '#2196f3',
       },
-      data: [
-        { value: 40, name: 'JavaScript', itemStyle: { color: '#f1e05a' } },
-        { value: 30, name: 'TypeScript', itemStyle: { color: '#3178c6' } },
-        { value: 20, name: 'Vue', itemStyle: { color: '#41b883' } },
-        { value: 10, name: 'HTML', itemStyle: { color: '#e34c26' } },
-      ],
     },
   ],
 }));
@@ -206,6 +235,12 @@ const starsOption = computed(() => ({
     },
   ],
 }));
+
+// onBeforeMount(async () => {
+//   if(typeof window !== 'undefined'){
+//     await requestUserTechStack();
+//   }
+// });
 </script>
 
 <style scoped lang="less">

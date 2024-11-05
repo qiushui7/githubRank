@@ -2,8 +2,7 @@ import axios from 'axios';
 import { getCookie } from '../utils/useAuthStore';
 
 const service = axios.create({
-  baseURL: '/service',
-  timeout: 5000,
+  baseURL: 'http://localhost:4777/service',
   headers: {
     'Content-Type': 'application/json',
   },
