@@ -9,8 +9,6 @@ export async function render(url: string, preloadData: any, manifest: any) {
 
   const router = createVueRouter('server');
 
-  app.config.globalProperties.$i18n.locale = 'en';
-
   app.use(router);
 
   // 设置服务器端路由位置

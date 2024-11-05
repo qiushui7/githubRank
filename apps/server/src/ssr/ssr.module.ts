@@ -29,6 +29,7 @@ export class SsrModule implements NestModule, OnModuleInit {
       .exclude(
         { path: 'api/(.*)', method: RequestMethod.ALL },
         { path: 'assets/(.*)', method: RequestMethod.ALL },
+        { path: 'service/(.*)', method: RequestMethod.ALL },
       )
       .forRoutes({
         path: '*',

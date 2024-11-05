@@ -34,7 +34,12 @@
     </div>
 
     <div v-else class="developers-grid">
-      <div v-for="dev in developers" :key="dev.id" class="developer-card">
+      <div
+        v-for="dev in developers"
+        :key="dev.id"
+        class="developer-card"
+        @click="goToDetail(dev.username)"
+      >
         <div class="card-content">
           <div class="avatar-container">
             <img v-lazy="dev.avatar" :alt="dev.name" class="avatar" />
@@ -48,6 +53,7 @@
                 :href="`https://github.com/${dev.username}`"
                 target="_blank"
                 class="github-username"
+                @click.stop.prevent="goToGithub(dev.username)"
               >
                 @{{ dev.username }}
               </a>
@@ -73,8 +79,69 @@ import { ref, onMounted, watch, inject } from 'vue';
 import { getRecommendDevelopers } from '../../service/recommend';
 import type { PreloadStore } from '../../utils/preload';
 import { useI18n } from 'vue-i18n';
-
+import { useRouter } from 'vue-router';
+import { request } from '../../service/github';
 const { t } = useI18n();
+
+const router = useRouter();
+
+const goToDetail = (username: string) => {
+  router.push(`/userInfo/${username}`);
+};
+
+const goToGithub = (username: string) => {
+  window.open(`https://github.com/${username}`, '_blank');
+};
+
+const fetcher = (variables: any) => {
+  return request(
+    {
+      query: `
+      query userInfo($login: String!) {
+        user(login: $login) {
+          repositories(ownerAffiliations: OWNER,  first: 100) {
+            nodes {
+              name
+              url
+              isFork
+              languages(first: 10, orderBy: {field: SIZE, direction: DESC}) {
+                edges {
+                  size
+                  node {
+                    color
+                    name
+                  }
+                }
+              }
+            }
+          }
+          # 获取用户参与的其他仓库
+          repositoriesContributedTo(first: 100, includeUserRepositories: false) {
+            nodes {
+              name
+              url
+              isFork
+              languages(first: 10, orderBy: {field: SIZE, direction: DESC}) {
+                edges {
+                  size
+                  node {
+                    color
+                    name
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+      `,
+      variables,
+    },
+    {
+      Authorization: `token ${import.meta.env.VITE_GITHUB_TOKEN}`,
+    },
+  );
+};
 
 useHead({
   title: t('recommend.title'),
@@ -129,6 +196,8 @@ onMounted(async () => {
   if (!preloadStore.state.recommendDevelopers?.length) {
     await fetchDevelopers();
   }
+  const res = await fetcher({ login: 'poteto' });
+  console.log(res);
 });
 </script>
 
@@ -186,11 +255,13 @@ onMounted(async () => {
   padding: 1.5rem;
   transition: all 0.3s ease;
   border: 1px solid var(--border-color);
+  cursor: pointer; /* 添加指针样式 */
 }
 
 .developer-card:hover {
   transform: translateY(-5px);
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  border-color: #2196f3; /* 添加悬浮时的边框颜色 */
 }
 
 .avatar-container {
@@ -247,10 +318,22 @@ onMounted(async () => {
   color: #2196f3; /* 从 #42b883 改为 #2196F3 */
   text-decoration: none;
   font-size: 0.9rem;
+  position: relative;
+  z-index: 1;
 }
 
 .github-username:hover {
   text-decoration: underline;
+}
+
+.github-username::before {
+  content: '';
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  bottom: -8px;
+  left: -8px;
+  z-index: -1;
 }
 
 .bio {
@@ -410,5 +493,11 @@ onMounted(async () => {
   .filter-section {
     margin-left: 0;
   }
+}
+
+/* 添加点击效果 */
+.developer-card:active {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 </style>

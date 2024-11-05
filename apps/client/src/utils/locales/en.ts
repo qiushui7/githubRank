@@ -23,5 +23,18 @@ export default {
     search: 'Search...',
     login: 'Login with GitHub',
     logout: 'Logout',
+    profile: 'Profile',
+  },
+  comment: {
+    comment_count: 'comments',
+    placeholder: 'Please enter your comment...',
+    submit: 'Submit Comment',
+    login_first: 'Please login first',
+    empty: 'No comments yet',
+    be_first: 'Be the first one to comment!',
+  },
+  summary: {
+    title: 'AI Generated Summary',
+    generated_at: 'Generated at',
   },
 };

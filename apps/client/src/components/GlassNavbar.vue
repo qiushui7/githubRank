@@ -25,12 +25,16 @@
                   :src="userInfo.avatar_url"
                   :alt="userInfo.login"
                   class="github-avatar"
+                  @click="navigateToUserInfo"
                 />
                 <div class="dropdown-menu">
                   <div class="user-info">
                     <span>{{ userInfo.login }}</span>
                   </div>
                   <div class="divider"></div>
+                  <div class="menu-item" @click="navigateToUserInfo">
+                    {{ t('nav.profile') }}
+                  </div>
                   <div class="menu-item" @click="handleLogout">
                     {{ t('nav.logout') }}
                   </div>
@@ -149,16 +153,12 @@ const getCurrentLocaleInfo = computed(
 
 const changeLocale = (code: string) => {
   locale.value = code;
-  localStorage.setItem('locale', code);
 };
 
-// 在组件挂载时读取保存的语言偏好
-onMounted(() => {
-  const savedLocale = localStorage.getItem('locale');
-  if (savedLocale) {
-    locale.value = savedLocale;
-  }
-});
+// 添加导航到用户信息页面的方法
+const navigateToUserInfo = () => {
+  router.push(`/userInfo/${userInfo.value.login}`);
+};
 </script>
 
 <style lang="less" scoped>
@@ -309,6 +309,11 @@ onMounted(() => {
     height: 40px;
     border-radius: 50%;
     cursor: pointer;
+    transition: transform 0.2s ease;
+
+    &:hover {
+      transform: scale(1.05);
+    }
   }
 
   .dropdown-menu {

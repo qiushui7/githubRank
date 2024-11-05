@@ -6,6 +6,7 @@
 import { onMounted, inject } from 'vue';
 import { useRouter } from 'vue-router';
 import type { AuthStore } from '../utils/useAuthStore';
+import { getUserInfo, getUserRepositories } from '../service/userInfo';
 
 const router = useRouter();
 const authStore = inject<AuthStore>('authStore')!;
@@ -27,6 +28,12 @@ onMounted(async () => {
         const userInfo = data.user;
         userInfo.access_token = data.access_token;
         await authStore.updateAuth(userInfo);
+        requestIdleCallback(() => {
+          if (authStore.isAuth) {
+            getUserInfo(authStore.userInfo.value.login);
+            getUserRepositories(authStore.userInfo.value.login);
+          }
+        });
         router.push('/');
       }
     }

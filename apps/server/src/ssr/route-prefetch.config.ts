@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
+import { getgid } from 'process';
 
 interface PrefetchConfig {
-  [path: string]: (httpService: HttpService) => Promise<any>;
+  [path: string]: (httpService: HttpService, path: string) => Promise<any>;
 }
 
 @Injectable()
@@ -11,7 +12,7 @@ export class RoutePrefetchService {
   constructor(private readonly httpService: HttpService) {}
 
   private readonly config: PrefetchConfig = {
-    '/': async (httpService: HttpService) => {
+    '/': async (httpService: HttpService, path: string) => {
       try {
         const response = await firstValueFrom(
           httpService.get('http://49.232.63.254:9000/recommend', {
@@ -40,12 +41,43 @@ export class RoutePrefetchService {
         };
       }
     },
+    '/userInfo': async (httpService: HttpService, path: string) => {
+      const id = path.split('/')[2];
+      const [userInfoResult, repositoriesResult] = await Promise.allSettled([
+        firstValueFrom(
+          httpService.get('http://49.232.63.254:9000/info/userInfo', {
+            params: {
+              github_id: id,
+            },
+          }),
+        ),
+        firstValueFrom(
+          httpService.get('http://49.232.63.254:9000/info/reposInfo', {
+            params: {
+              github_id: id,
+            },
+          }),
+        ),
+      ]);
+      return {
+        [`${id}`]: {
+          userInfo:
+            userInfoResult.status === 'fulfilled'
+              ? userInfoResult.value.data
+              : {},
+          repositories:
+            repositoriesResult.status === 'fulfilled'
+              ? repositoriesResult.value.data
+              : [],
+        },
+      };
+    },
   };
 
   async getPrefetchData(path: string): Promise<any> {
-    const prefetchFn = this.config[path];
+    const prefetchFn = this.config['/' + path.split('/')[1]];
     if (prefetchFn) {
-      return await prefetchFn(this.httpService);
+      return await prefetchFn(this.httpService, path);
     }
     return {};
   }

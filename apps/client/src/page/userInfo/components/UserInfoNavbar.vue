@@ -18,9 +18,9 @@
 const navList = [
   'Rankings',
   'Summary',
-  'Score',
   'Repositories',
   'LatestIssues',
+  'Score',
 ];
 const props = defineProps<{
   modelValue: string;

@@ -7,7 +7,7 @@ export const USER_INFO_KEY = 'user_info';
 export const setCookie = (key: string, value: string) => {
   Cookies.set(key, value, {
     expires: 7, // 7天后过期
-    secure: true, // 只在 HTTPS 连接中传输
+    secure: false, // 只在 HTTPS 连接中传输
     sameSite: 'strict', // 防止 CSRF 攻击
   });
 };
