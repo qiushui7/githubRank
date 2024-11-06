@@ -12,7 +12,9 @@ services:
       - REDIS_HOST=redis
       - REDIS_PORT=6379
       - REDIS_PASSWORD=123456
-      - SERVICE_URL=http://49.232.63.254:9000
+      - SERVICE_URL=${SERVICE_URL}
+    env_file:
+      - .env
     depends_on:
       - redis
 
