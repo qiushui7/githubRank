@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
-import { getgid } from 'process';
+import { ConfigService } from '@nestjs/config';
 
 interface PrefetchConfig {
   [path: string]: (httpService: HttpService, path: string) => Promise<any>;
@@ -9,17 +9,23 @@ interface PrefetchConfig {
 
 @Injectable()
 export class RoutePrefetchService {
-  constructor(private readonly httpService: HttpService) {}
+  constructor(
+    private readonly httpService: HttpService,
+    private readonly configService: ConfigService,
+  ) {}
 
   private readonly config: PrefetchConfig = {
     '/': async (httpService: HttpService, path: string) => {
       try {
         const response = await firstValueFrom(
-          httpService.get('http://49.232.63.254:9000/recommend', {
-            params: {
-              since: 'daily',
+          httpService.get(
+            `${this.configService.get('SERVICE_URL')}/recommend`,
+            {
+              params: {
+                since: 'daily',
+              },
             },
-          }),
+          ),
         );
 
         // 清理数据，确保服务端和客户端数据一致
@@ -45,18 +51,24 @@ export class RoutePrefetchService {
       const id = path.split('/')[2];
       const [userInfoResult, repositoriesResult] = await Promise.allSettled([
         firstValueFrom(
-          httpService.get('http://49.232.63.254:9000/info/userInfo', {
-            params: {
-              github_id: id,
+          httpService.get(
+            `${this.configService.get('SERVICE_URL')}/info/userInfo`,
+            {
+              params: {
+                github_id: id,
+              },
             },
-          }),
+          ),
         ),
         firstValueFrom(
-          httpService.get('http://49.232.63.254:9000/info/reposInfo', {
-            params: {
-              github_id: id,
+          httpService.get(
+            `${this.configService.get('SERVICE_URL')}/info/reposInfo`,
+            {
+              params: {
+                github_id: id,
+              },
             },
-          }),
+          ),
         ),
       ]);
       return {

@@ -80,7 +80,6 @@ import { getRecommendDevelopers } from '../../service/recommend';
 import type { PreloadStore } from '../../utils/preload';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
-import { request } from '../../service/github';
 const { t } = useI18n();
 
 const router = useRouter();
@@ -91,56 +90,6 @@ const goToDetail = (username: string) => {
 
 const goToGithub = (username: string) => {
   window.open(`https://github.com/${username}`, '_blank');
-};
-
-const fetcher = (variables: any) => {
-  return request(
-    {
-      query: `
-      query userInfo($login: String!) {
-        user(login: $login) {
-          repositories(ownerAffiliations: OWNER,  first: 100) {
-            nodes {
-              name
-              url
-              isFork
-              languages(first: 10, orderBy: {field: SIZE, direction: DESC}) {
-                edges {
-                  size
-                  node {
-                    color
-                    name
-                  }
-                }
-              }
-            }
-          }
-          # 获取用户参与的其他仓库
-          repositoriesContributedTo(first: 100, includeUserRepositories: false) {
-            nodes {
-              name
-              url
-              isFork
-              languages(first: 10, orderBy: {field: SIZE, direction: DESC}) {
-                edges {
-                  size
-                  node {
-                    color
-                    name
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-      `,
-      variables,
-    },
-    {
-      Authorization: `token ${import.meta.env.VITE_GITHUB_TOKEN}`,
-    },
-  );
 };
 
 useHead({
@@ -196,8 +145,6 @@ onMounted(async () => {
   if (!preloadStore.state.recommendDevelopers?.length) {
     await fetchDevelopers();
   }
-  const res = await fetcher({ login: 'poteto' });
-  console.log(res);
 });
 </script>
 

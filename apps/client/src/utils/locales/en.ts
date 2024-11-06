@@ -25,6 +25,9 @@ export default {
     logout: 'Logout',
     profile: 'Profile',
   },
+  userInfoProfile: {
+    developer: 'Developer Score',
+  },
   comment: {
     comment_count: 'comments',
     placeholder: 'Please enter your comment...',

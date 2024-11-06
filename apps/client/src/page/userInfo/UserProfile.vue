@@ -70,7 +70,7 @@
           <div class="stats-section">
             <div class="stat-item">
               <div class="stat-value">
-                {{ formatNumber(userInfo?.totalStars ?? 0) }}
+                {{ formatNumber(totalStars ?? 0) }}
               </div>
               <div class="stat-label">Stars</div>
             </div>
@@ -84,7 +84,7 @@
           </div>
 
           <div class="score-section">
-            <div class="score-label">开发者评分</div>
+            <div class="score-label">{{ t('userInfoProfile.developer') }}</div>
             <div class="score-value">
               {{ (userInfo?.score ?? 0).toFixed(1) }}
             </div>
@@ -97,6 +97,8 @@
 
 <script setup lang="ts">
 import ClientOnly from '@duannx/vue-client-only';
+import { useI18n } from 'vue-i18n';
+const { t } = useI18n();
 
 interface UserInfo {
   name?: string;
@@ -113,6 +115,7 @@ interface UserInfo {
 const props = withDefaults(
   defineProps<{
     userInfo: UserInfo;
+    totalStars?: number;
     loading?: boolean;
   }>(),
   {
