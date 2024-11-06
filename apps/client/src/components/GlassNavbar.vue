@@ -319,7 +319,7 @@ const navigateToUserInfo = () => {
   .dropdown-menu {
     display: none;
     position: absolute;
-    top: calc(100%+10px);
+    top: calc(100% + 10px);
     right: 50%;
     transform: translateX(50%);
     background: var(--bg-color);
