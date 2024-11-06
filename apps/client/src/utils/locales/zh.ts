@@ -25,6 +25,16 @@ export default {
     logout: '退出登录',
     profile: '个人资料',
   },
+  userInfoProfile: {
+    developer: '开发者评分',
+  },
+  userInfoNav: {
+    repositories: '仓库',
+    rankings: '排行',
+    summary: '总结',
+    issues: '最新问题',
+    score: '评分',
+  },
   rankings: {
     title: '开发者排名',
     description: '这些是今天正在构建热门工具的开发者。',

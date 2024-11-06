@@ -1,7 +1,5 @@
 import { ref, reactive } from 'vue';
 
-export type PreloadKey = 'recommendDevelopers' | any;
-
 // 预加载数据的接口
 export type PreloadState = Record<any, any>;
 
@@ -23,10 +21,3 @@ export function createPreloadStore() {
 }
 
 export type PreloadStore = ReturnType<typeof createPreloadStore>;
-
-const obj = {
-  recommendDevelopers: [],
-  qiushui7: {
-    userInfo: {},
-  },
-};

@@ -1,11 +1,13 @@
 import { Injectable, NestMiddleware } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
 import { createProxyMiddleware } from 'http-proxy-middleware';
-
+import { ConfigService } from '@nestjs/config';
 @Injectable()
 export class ProxyMiddleware implements NestMiddleware {
+  constructor(private readonly configService: ConfigService) {}
+  private target = this.configService.get('SERVICE_URL');
   private proxy = createProxyMiddleware({
-    target: 'http://49.232.63.254:9000',
+    target: this.target,
     changeOrigin: true,
     pathRewrite: {
       '^/service': '', // 移除 /service 前缀
@@ -14,7 +16,6 @@ export class ProxyMiddleware implements NestMiddleware {
 
   use(req: Request, res: Response, next: NextFunction) {
     if (req.path.startsWith('/service')) {
-      console.log(req.cookies);
       return this.proxy(req, res, next);
     }
     next();

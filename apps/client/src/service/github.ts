@@ -71,23 +71,6 @@ const fetcher = (variables: any) => {
               }
             }
           }
-          # 获取用户参与的其他仓库
-          repositoriesContributedTo(first: 100, includeUserRepositories: false) {
-            nodes {
-              name
-              url
-              isFork
-              languages(first: 10, orderBy: {field: SIZE, direction: DESC}) {
-                edges {
-                  size
-                  node {
-                    color
-                    name
-                  }
-                }
-              }
-            }
-          }
         }
       }
       `,
@@ -97,20 +80,6 @@ const fetcher = (variables: any) => {
       Authorization: `token ${import.meta.env.VITE_GITHUB_TOKEN}`,
     },
   );
-};
-
-const retryer = async <T>(
-  fn: (...args: any[]) => Promise<T>,
-  ...args: any[]
-): Promise<T> => {
-  try {
-    return await fn(...args);
-  } catch (error) {
-    if (error instanceof Error) {
-      throw error;
-    }
-    throw new Error('Unknown error occurred');
-  }
 };
 
 const logger = {
@@ -135,7 +104,7 @@ const fetchTopLanguages = async (
     throw new MissingParamError(['username']);
   }
 
-  const res = await retryer(fetcher, { login: username });
+  const res = await fetcher({ login: username });
 
   if (res.data.errors) {
     logger.error(res.data.errors);

@@ -1,7 +1,11 @@
 <template>
   <div class="user-info-container">
     <!-- 左侧用户基本信息 -->
-    <UserProfile :user-info="userInfo" :loading="isLoading" />
+    <UserProfile
+      :user-info="userInfo"
+      :total-stars="totalStars"
+      :loading="isLoading"
+    />
 
     <!-- 右侧内容区域 -->
     <div class="content-section">
@@ -15,6 +19,7 @@
             :is="currentComponent"
             :key="currentTab"
             :github_id="github_id"
+            @update:totalStars="updateTotalStars"
           />
         </keep-alive>
       </div>
@@ -53,6 +58,7 @@ const route = useRoute();
 const router = useRouter();
 const github_id = computed(() => route.params.id as string);
 const isLoading = ref(false);
+const totalStars = ref(0);
 const preloadStore = inject<PreloadStore>('preloadStore')!;
 
 const requestUserInfo = async () => {
@@ -128,6 +134,10 @@ const currentComponent = computed(() => {
   } as const;
   return components[currentTab.value as keyof typeof components];
 });
+
+const updateTotalStars = (stars: number) => {
+  totalStars.value = stars;
+};
 </script>
 
 <style scoped lang="less">
