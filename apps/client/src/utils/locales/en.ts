@@ -16,6 +16,7 @@ export default {
   },
   search: {
     all: 'All Countries',
+    result: 'Search Results',
   },
   common: {
     loading: 'Loading...',

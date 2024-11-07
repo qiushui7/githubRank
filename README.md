@@ -2,11 +2,9 @@
 
 GitHub Rank 是一个用于展示和分析 GitHub 用户数据的平台。它提供了用户仓库统计、语言分析、活跃度评分等功能。
 
-## 详细文档
+[demo视频](https://www.bilibili.com/video/BV15eDQYuEsa/?spm_id_from=333.999.0.0&vd_source=96f911a3bb7b1b2808b2794a5dd4d544)
 
 [详细文档](https://lvqdp39r77u.feishu.cn/docx/F7H2dOfX7o85AKx3WJfcml2nnWc)
-
-## 后端地址
 
 [后端地址](https://github.com/yan931305137/GithubRank_Server)
 
