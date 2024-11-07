@@ -10,10 +10,11 @@ import { AuthModule } from './auth/auth.module';
 import { RedisCacheModule } from './cache/redis-cache.module';
 import { SsrModule } from './ssr/ssr.module';
 import { ProxyMiddleware } from './proxy/proxy.middleware';
-
+import { resolve } from 'path';
 @Module({
   imports: [
     ConfigModule.forRoot({
+      envFilePath: resolve(__dirname, '../../../.env'),
       isGlobal: true,
     }),
     AuthModule,

@@ -40,4 +40,13 @@ export default {
     title: 'AI Generated Summary',
     generated_at: 'Generated at',
   },
+  auth: {
+    processing: 'Processing GitHub login...',
+  },
+  empty: {
+    repositories: 'no repositories',
+    repositories_subtext: 'The user has not created any repositories',
+    issues: 'no issues',
+    issues_subtext: 'The user has not created any issues',
+  },
 };

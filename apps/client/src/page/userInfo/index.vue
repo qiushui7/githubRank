@@ -2,6 +2,7 @@
   <div class="user-info-container">
     <!-- 左侧用户基本信息 -->
     <UserProfile
+      :github_id="github_id"
       :user-info="userInfo"
       :total-stars="totalStars"
       :loading="isLoading"

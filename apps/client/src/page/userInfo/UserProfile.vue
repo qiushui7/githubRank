@@ -85,8 +85,14 @@
 
           <div class="score-section">
             <div class="score-label">{{ t('userInfoProfile.developer') }}</div>
-            <div class="score-value">
-              {{ (userInfo?.score ?? 0).toFixed(1) }}
+            <div
+              class="score-value"
+              :class="{ 'score-loading': isScoreLoading }"
+            >
+              <span class="score-text">{{
+                isScoreLoading ? '...' : score.toFixed(1)
+              }}</span>
+              <div v-if="isScoreLoading" class="loading-bar"></div>
             </div>
           </div>
         </div>
@@ -96,8 +102,10 @@
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue';
 import ClientOnly from '@duannx/vue-client-only';
 import { useI18n } from 'vue-i18n';
+import { getUserEvaluation } from '../../service/userInfo';
 const { t } = useI18n();
 
 interface UserInfo {
@@ -107,7 +115,6 @@ interface UserInfo {
   country_code?: string;
   location?: string;
   bio?: string;
-  score?: number;
   totalStars?: number;
   followers?: number;
 }
@@ -117,11 +124,15 @@ const props = withDefaults(
     userInfo: UserInfo;
     totalStars?: number;
     loading?: boolean;
+    github_id?: string;
   }>(),
   {
     userInfo: () => ({}),
   },
 );
+
+const score = ref(0);
+const isScoreLoading = ref(true);
 
 const defaultAvatar =
   'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"%3E%3Cpath fill="%23ccc" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/%3E%3C/svg%3E';
@@ -139,6 +150,23 @@ const formatNumber = (num: number): string => {
     return '0';
   }
 };
+
+const requestUserEvaluation = async () => {
+  try {
+    isScoreLoading.value = true;
+    const res = await getUserEvaluation(props.github_id as string);
+    score.value = res.data.score;
+  } catch (error) {
+    console.error('Failed to fetch user evaluation:', error);
+    score.value = 0;
+  } finally {
+    isScoreLoading.value = false;
+  }
+};
+
+if (typeof window !== 'undefined') {
+  requestUserEvaluation();
+}
 </script>
 
 <style scoped lang="less">
@@ -251,10 +279,43 @@ const formatNumber = (num: number): string => {
         }
 
         .score-value {
+          position: relative;
+          display: inline-block;
           font-size: 2rem;
           font-weight: bold;
           color: #2196f3;
           margin-top: 0.5rem;
+          padding-bottom: 4px;
+
+          .score-text {
+            opacity: 1;
+            transition: opacity 0.3s ease;
+          }
+
+          &.score-loading {
+            .score-text {
+              opacity: 0.7;
+            }
+
+            .loading-bar {
+              position: absolute;
+              bottom: 0;
+              left: 0;
+              width: 100%;
+              height: 2px;
+              overflow: hidden;
+
+              &::after {
+                content: '';
+                position: absolute;
+                width: 50%;
+                height: 100%;
+                background: #2196f3;
+                animation: loading 1s ease-in-out infinite;
+                transform-origin: center;
+              }
+            }
+          }
         }
       }
     }
@@ -352,5 +413,14 @@ const formatNumber = (num: number): string => {
   height: 32px;
   width: 100px;
   margin: 0.5rem auto 0;
+}
+
+@keyframes loading {
+  0% {
+    left: -50%;
+  }
+  100% {
+    left: 100%;
+  }
 }
 </style>

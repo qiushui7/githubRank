@@ -45,7 +45,7 @@ function renderPreloadLinks(
     const files: any = manifest[id];
     if (files) {
       links += renderPreloadLink(files.file);
-      files.css.forEach((file: any) => {
+      files.css?.forEach((file: any) => {
         if (!seen.has(file)) {
           seen.add(file);
           links += renderPreloadLink(file);

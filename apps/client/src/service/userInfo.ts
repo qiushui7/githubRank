@@ -41,3 +41,10 @@ export const getUserTechStack = (github_id: string) =>
       github_id,
     },
   });
+
+export const getUserEvaluation = (github_id: string) =>
+  service.get('/info/evaluate', {
+    params: {
+      github_id,
+    },
+  });

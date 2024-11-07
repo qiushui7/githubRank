@@ -1,6 +1,6 @@
 <template>
   <div class="issues-container">
-    <table>
+    <table :class="{ 'empty-table': issuesList.length === 0 }">
       <thead>
         <tr>
           <th>Repo</th>
@@ -20,6 +20,17 @@
             <td><div class="skeleton user-skeleton"></div></td>
             <td><div class="skeleton"></div></td>
             <td><div class="skeleton"></div></td>
+          </tr>
+        </template>
+        <template v-else-if="issuesList.length === 0">
+          <tr>
+            <td colspan="6" id="empty-state-td">
+              <div class="empty-state">
+                <div class="empty-icon">🔍</div>
+                <div class="empty-text">{{ t('empty.issues') }}</div>
+                <div class="empty-subtext">{{ t('empty.issues_subtext') }}</div>
+              </div>
+            </td>
           </tr>
         </template>
         <template v-else>
@@ -72,6 +83,9 @@ import { ref, onBeforeMount } from 'vue';
 import { formatDate, formatDistance } from '../../utils/timeFormat';
 import { useRouter } from 'vue-router';
 import { getUserIssues } from '../../service/userInfo';
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 const router = useRouter();
 
@@ -109,6 +123,7 @@ const navigateToUser = (username: string) => {
 <style scoped lang="less">
 .issues-container {
   width: 100%;
+  height: 100%;
   overflow-x: auto;
 
   table {
@@ -318,6 +333,63 @@ const navigateToUser = (username: string) => {
       border: 2px solid transparent;
       background-clip: padding-box;
     }
+  }
+}
+
+#empty-state-td {
+  padding: 0;
+}
+
+.empty-table {
+  height: 100%;
+}
+
+.empty-state {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-color);
+  background: var(--bg-color);
+
+  .empty-icon {
+    font-size: 4rem;
+    margin-bottom: 1.5rem;
+    opacity: 0.5;
+    animation: float 3s ease-in-out infinite;
+  }
+
+  .empty-text {
+    font-size: 1.2rem;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(
+      141.27deg,
+      #ff904e -4.24%,
+      #ff5982 21.25%,
+      #ec68f4 44.33%,
+      #79e2ff 83.46%
+    );
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .empty-subtext {
+    font-size: 0.9rem;
+    color: var(--text-color);
+    opacity: 0.7;
+  }
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
   }
 }
 </style>
