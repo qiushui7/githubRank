@@ -1,6 +1,6 @@
 <template>
   <div class="repositories-container">
-    <table>
+    <table :class="{ 'empty-table': RepositoriesList.length === 0 }">
       <thead>
         <tr>
           <th>Name</th>
@@ -28,6 +28,19 @@
           </tr>
         </template>
         <!-- 实际数据 -->
+        <template v-else-if="RepositoriesList.length === 0">
+          <tr>
+            <td colspan="8" id="empty-state-td">
+              <div class="empty-state">
+                <div class="empty-icon">📦</div>
+                <div class="empty-text">{{ t('empty.repositories') }}</div>
+                <div class="empty-subtext">
+                  {{ t('empty.repositories_subtext') }}
+                </div>
+              </div>
+            </td>
+          </tr>
+        </template>
         <template v-else>
           <tr v-for="item in RepositoriesList" :key="item.name">
             <td class="repo-name">
@@ -65,6 +78,9 @@ import { useRoute } from 'vue-router';
 import type { Repository } from '../../types/repository';
 import { formatDate, formatDistance } from '../../utils/timeFormat';
 import type { PreloadStore } from '../../utils/preload';
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 const preloadStore = inject<PreloadStore>('preloadStore')!;
 
@@ -116,6 +132,7 @@ onBeforeMount(() => {
 .repositories-container {
   width: 100%;
   overflow-x: auto;
+  height: 100%;
 
   table {
     width: 100%;
@@ -209,21 +226,7 @@ onBeforeMount(() => {
       }
     }
   }
-}
 
-// 语言标签样式
-.language-tag {
-  display: inline-block;
-  padding: 4px 8px;
-  border-radius: 12px;
-  font-size: 0.85rem;
-  background: var(--hover-bg-color);
-  border: 1px solid var(--border-color);
-  color: var(--text-color);
-}
-
-// 添加响应式滚动条样式
-.repositories-container {
   &::-webkit-scrollbar {
     width: 6px;
     height: 6px;
@@ -246,6 +249,17 @@ onBeforeMount(() => {
       background-clip: padding-box;
     }
   }
+}
+
+// 语言标签样式
+.language-tag {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  background: var(--hover-bg-color);
+  border: 1px solid var(--border-color);
+  color: var(--text-color);
 }
 
 // 骨架屏样式
@@ -302,6 +316,63 @@ onBeforeMount(() => {
       width: 100%;
       max-width: 120px;
     }
+  }
+}
+
+#empty-state-td {
+  padding: 0;
+}
+
+.empty-table {
+  height: 100%;
+}
+
+.empty-state {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-color);
+  background: var(--bg-color);
+
+  .empty-icon {
+    font-size: 4rem;
+    margin-bottom: 1.5rem;
+    opacity: 0.5;
+    animation: float 3s ease-in-out infinite;
+  }
+
+  .empty-text {
+    font-size: 1.2rem;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(
+      141.27deg,
+      #ff904e -4.24%,
+      #ff5982 21.25%,
+      #ec68f4 44.33%,
+      #79e2ff 83.46%
+    );
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .empty-subtext {
+    font-size: 0.9rem;
+    color: var(--text-color);
+    opacity: 0.7;
+  }
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
   }
 }
 </style>

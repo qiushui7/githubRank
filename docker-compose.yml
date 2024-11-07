@@ -5,16 +5,14 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    ports:
-      - "4777:4777"
+    env_file:
+      - ./.env
     environment:
-      - NODE_ENV=production
-      - REDIS_HOST=redis
+      - REDIS_HOST=redis  # 显式指定 Redis 主机为 service 名称
       - REDIS_PORT=6379
       - REDIS_PASSWORD=123456
-      - SERVICE_URL=${SERVICE_URL}
-    env_file:
-      - .env
+    ports:
+      - "4777:4777"
     depends_on:
       - redis
 

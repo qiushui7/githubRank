@@ -4,7 +4,7 @@
       <h1 class="title">搜索结果: "{{ keyword }}"</h1>
       <div class="filter-section">
         <select v-model="selectedCountry" class="country-filter">
-          <option value="">所有国家</option>
+          <option value="">{{ t('search.all') }}</option>
           <option
             v-for="country in availableCountries"
             :key="country.code"
@@ -66,88 +66,122 @@
 
     <!-- 搜索结果 -->
     <div v-else>
-      <div v-if="filteredDevelopers.length" class="developers-list">
-        <div
-          v-for="dev in paginatedDevelopers"
-          :key="dev.id"
-          class="developer-card"
-        >
-          <div class="card-content">
-            <div class="left-section">
-              <div class="avatar-container">
-                <img :src="dev.avatar" :alt="dev.name" class="avatar" />
+      <div v-if="!isLoading">
+        <div v-if="developers.length" class="developers-list">
+          <!-- 开发者卡片列表 -->
+          <div v-for="dev in developers" :key="dev.id" class="developer-card">
+            <!-- 添加卡片背景 logo -->
+            <div class="card-background-logo">
+              <svg
+                viewBox="0 0 16 16"
+                width="100%"
+                height="100%"
+                fill="currentColor"
+              >
+                <path
+                  d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"
+                />
+              </svg>
+            </div>
+            <div class="card-content">
+              <div class="left-section">
+                <div
+                  class="avatar-container"
+                  @click="navigateToUserInfo(dev.user_info.login)"
+                >
+                  <img
+                    :src="dev.user_info.avatar_url"
+                    :alt="dev.user_info.name"
+                    class="avatar"
+                  />
+                </div>
+                <div class="basic-info">
+                  <h3 class="dev-name">{{ dev.user_info.name }}</h3>
+                  <div class="username-container">
+                    <a
+                      :href="dev.user_info.html_url"
+                      target="_blank"
+                      class="github-username"
+                    >
+                      @{{ dev.user_info.login }}
+                    </a>
+                  </div>
+                  <div class="location" v-if="dev.user_info.location">
+                    <i class="location-icon">📍</i>
+                    {{ dev.user_info.location }}
+                  </div>
+                </div>
               </div>
-              <div class="basic-info">
-                <h3 class="dev-name">{{ dev.name }}</h3>
-                <div class="username-container">
-                  <span class="country-flag">{{ dev.countryCode }}</span>
+
+              <div class="center-section">
+                <div class="bio-section">
+                  <div v-if="dev.user_info.bio" class="bio">
+                    {{ dev.user_info.bio }}
+                  </div>
+                  <div v-else class="bio empty-bio">This user has no bio</div>
+                </div>
+                <div class="user-links">
                   <a
-                    :href="`https://github.com/${dev.username}`"
+                    v-if="dev.user_info.blog"
+                    :href="dev.user_info.blog"
                     target="_blank"
-                    class="github-username"
+                    class="link"
                   >
-                    @{{ dev.username }}
+                    <i class="link-icon">🔗</i> Blog
+                  </a>
+                  <a
+                    v-if="dev.user_info.email"
+                    :href="`mailto:${dev.user_info.email}`"
+                    class="link"
+                  >
+                    <i class="link-icon">📧</i> Email
                   </a>
                 </div>
-              </div>
-            </div>
-
-            <div class="center-section">
-              <p class="bio">{{ dev.bio }}</p>
-              <div class="stats-grid">
-                <div class="stat-item">
-                  <div class="stat-label">主要语言</div>
-                  <div class="stat-value">
-                    <span
-                      class="language-dot"
-                      :style="{ background: dev.mainLanguageColor }"
-                    ></span>
-                    {{ dev.mainLanguage }}
+                <div class="stats-grid">
+                  <div class="stat-item">
+                    <div class="stat-label">Repositories</div>
+                    <div class="stat-value">
+                      {{ dev.user_info.public_repos }}
+                    </div>
+                  </div>
+                  <div class="stat-item">
+                    <div class="stat-label">Followers</div>
+                    <div class="stat-value">{{ dev.user_info.followers }}</div>
+                  </div>
+                  <div class="stat-item">
+                    <div class="stat-label">Following</div>
+                    <div class="stat-value">{{ dev.user_info.following }}</div>
+                  </div>
+                  <div class="stat-item">
+                    <div class="stat-label">Gists</div>
+                    <div class="stat-value">
+                      {{ dev.user_info.public_gists }}
+                    </div>
+                  </div>
+                  <div class="stat-item">
+                    <div class="stat-label">Created</div>
+                    <div class="stat-value">
+                      {{ formatDate(dev.user_info.created_at) }}
+                    </div>
                   </div>
                 </div>
-                <div class="stat-item">
-                  <div class="stat-label">获得 Star</div>
-                  <div class="stat-value">
-                    {{ dev.totalStars.toLocaleString() }}
-                  </div>
-                </div>
-                <div class="stat-item">
-                  <div class="stat-label">被 Fork</div>
-                  <div class="stat-value">
-                    {{ dev.totalForks.toLocaleString() }}
-                  </div>
-                </div>
-                <div class="stat-item">
-                  <div class="stat-label">总 Issue</div>
-                  <div class="stat-value">
-                    {{ dev.totalIssues.toLocaleString() }}
-                  </div>
-                </div>
-                <div class="stat-item score">
-                  <div class="stat-label">开发者评分</div>
-                  <div class="stat-value score-value">
-                    {{ dev.score.toFixed(1) }}
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="right-section">
-              <div class="stats">
-                <div class="followers-count">
-                  {{ dev.followers.toLocaleString() }}
-                </div>
-                <div class="followers-label">关注者</div>
               </div>
             </div>
           </div>
-        </div>
 
-        <!-- 使用分页器组件 -->
-        <Pagination
-          v-model:currentPage="currentPage"
-          :total-pages="totalPages"
-        />
+          <!-- 加载更多 -->
+          <div ref="loadingRef" class="loading-more" v-if="hasMore">
+            <div v-if="isLoadingMore" class="loading-spinner">
+              <div class="spinner"></div>
+              <span>加载中...</span>
+            </div>
+          </div>
+
+          <!-- 全部加载完毕 -->
+          <div v-else class="no-more">
+            <span>已经到底啦 ~</span>
+          </div>
+        </div>
       </div>
       <div v-else class="no-results">
         <p>没有找到相关开发者</p>
@@ -157,25 +191,33 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue';
-import { useRoute } from 'vue-router';
-import Pagination from '@/components/Pagination.vue';
+import { ref, computed, watch, inject, onMounted, onUnmounted } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import countries from 'i18n-iso-countries';
+import zhLocale from 'i18n-iso-countries/langs/zh.json';
+import enLocale from 'i18n-iso-countries/langs/en.json';
+import { useI18n } from 'vue-i18n';
+import { searchDevelopers, SearchParams } from '../../service/search';
+import { AuthStore } from '../../utils/useAuthStore';
+import { formatDate } from '../../utils/timeFormat';
 
 interface Developer {
-  id: number;
-  name: string;
-  username: string;
-  avatar: string;
-  country: string;
-  countryCode: string;
-  bio: string;
-  followers: number;
-  mainLanguage: string;
-  mainLanguageColor: string;
-  totalStars: number;
-  totalForks: number;
-  totalIssues: number;
-  score: number;
+  user_info: {
+    id: number;
+    name: string;
+    username: string;
+    avatar: string;
+    country: string;
+    countryCode: string;
+    bio: string;
+    followers: number;
+    mainLanguage: string;
+    mainLanguageColor: string;
+    totalStars: number;
+    totalForks: number;
+    totalIssues: number;
+    score: number;
+  };
 }
 
 interface Country {
@@ -183,94 +225,129 @@ interface Country {
   name: string;
 }
 
-const route = useRoute();
-const keyword = computed(() => route.query.keyword as string);
-const isLoading = ref(true);
-const developers = ref<Developer[]>([]);
-const selectedCountry = ref('');
+const { t, locale } = useI18n();
 
-// 模拟的国家数据
-const availableCountries = ref<Country[]>([
-  { code: 'CN', name: '中国' },
-  { code: 'US', name: '美国' },
-  { code: 'JP', name: '日本' },
-  { code: 'UK', name: '英国' },
-  { code: 'DE', name: '德国' },
-]);
+countries.registerLocale(zhLocale);
+countries.registerLocale(enLocale);
 
-// 模拟搜索API调用
-const searchDevelopers = async (query: string) => {
-  isLoading.value = true;
-  try {
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    developers.value = new Array(8).fill(null).map((item, index) => {
-      return {
-        id: index + 1,
-        name: '尤雨溪',
-        username: 'yyx990803',
-        avatar: 'https://avatars.githubusercontent.com/u/499550',
-        country: '美国',
-        countryCode: 'US',
-        bio: 'Vue.js 创始人',
-        followers: 78500,
-        mainLanguage: 'JavaScript',
-        mainLanguageColor: '#f1e05a',
-        totalStars: 156800,
-        totalForks: 28900,
-        totalIssues: 12500,
-        score: 9.8,
-      };
-    });
-  } finally {
-    isLoading.value = false;
-  }
-};
+// 获取中文国家列表
+const zhCountryObj = countries.getNames('zh');
+const enCountryObj = countries.getNames('en');
 
-// 根据国家筛选开发者
-const filteredDevelopers = computed(() => {
-  if (!selectedCountry.value) return developers.value;
-  return developers.value.filter(
-    (dev) => dev.countryCode === selectedCountry.value,
-  );
-});
-
-// 监听路由参数变化
-watch(
-  () => route.query.keyword,
-  (newKeyword) => {
-    if (newKeyword) {
-      searchDevelopers(newKeyword as string);
-    }
-  },
-  { immediate: true },
-);
+const authStore = inject<AuthStore>('authStore')!;
 
 const currentPage = ref(1);
 const pageSize = 5; // 每页显示5条数据
+const route = useRoute();
+const keyword = computed(() => route.query.keyword as string);
+const isLoading = ref(true);
+const isLoadingMore = ref(false);
+const hasMore = ref(true);
+const loadingRef = ref<HTMLElement | null>(null);
+const developers = ref<Developer[]>([]);
+const selectedCountry = ref('');
 
-// 计算总页数
-const totalPages = computed(() => {
-  return Math.ceil(filteredDevelopers.value.length / pageSize);
+const availableCountries = computed(() => {
+  const countryObj = locale.value === 'zh' ? zhCountryObj : enCountryObj;
+  return Object.entries(countryObj).map(([code, name]) => ({
+    code,
+    name,
+  }));
 });
 
-// 获取当前页的数据
-const paginatedDevelopers = computed(() => {
-  const start = (currentPage.value - 1) * pageSize;
-  const end = start + pageSize;
-  return filteredDevelopers.value.slice(start, end);
+const requestSearchDevelopers = async (isLoadMore = false) => {
+  if (!isLoadMore) {
+    isLoading.value = true;
+  } else {
+    isLoadingMore.value = true;
+  }
+
+  try {
+    const query = route.query.keyword as string;
+    let nation = '';
+    if (!selectedCountry.value) {
+      nation = '';
+    } else {
+      nation = enCountryObj[selectedCountry.value as string];
+    }
+    const data: SearchParams = {
+      target_language: '',
+      nation,
+      techs: [...authStore.techStack.value],
+    };
+    const res = await searchDevelopers(
+      query,
+      pageSize,
+      currentPage.value,
+      data,
+    );
+
+    if (isLoadMore) {
+      developers.value = [...developers.value, ...res.data.result];
+    } else {
+      developers.value = res.data.result;
+    }
+
+    hasMore.value = res.data.result.length === pageSize;
+  } finally {
+    if (isLoadMore) {
+      isLoadingMore.value = false;
+    } else {
+      isLoading.value = false;
+    }
+  }
+};
+
+// 使用原生 Intersection Observer
+onMounted(() => {
+  const observer = new IntersectionObserver(
+    (entries) => {
+      const target = entries[0];
+      if (target.isIntersecting && !isLoadingMore.value && hasMore.value) {
+        currentPage.value++;
+        requestSearchDevelopers(true);
+      }
+    },
+    {
+      threshold: 0.5,
+    },
+  );
+
+  if (loadingRef.value) {
+    observer.observe(loadingRef.value);
+  }
+
+  // 组件卸载时清理
+  onUnmounted(() => {
+    observer.disconnect();
+  });
 });
 
-// 监听筛选条件变化，重置页码
-watch([selectedCountry, () => route.query.keyword], () => {
+// 监听搜索条件变化
+watch([() => route.query.keyword, selectedCountry], () => {
+  if (typeof window === 'undefined') return;
   currentPage.value = 1;
+  hasMore.value = true;
+  requestSearchDevelopers();
 });
+
+if (typeof window !== 'undefined') {
+  requestSearchDevelopers();
+}
+
+const router = useRouter();
+
+const navigateToUserInfo = (username: string) => {
+  router.push(`/userInfo/${username}`);
+};
 </script>
 
-<style scoped>
+<style scoped lang="less">
 .search-container {
   max-width: 1600px;
   width: 80vw;
   margin: 0 auto;
+  position: relative; // 添加相对定位
 }
 
 .search-header {
@@ -320,111 +397,190 @@ watch([selectedCountry, () => route.query.keyword], () => {
   border-radius: 1rem;
   padding: 1.5rem;
   border: 1px solid var(--border-color);
-}
+  position: relative; // 添加相对定位
+  overflow: hidden; // 确保 logo 不会超出卡片
 
-.developer-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  }
+
+  .card-background-logo {
+    position: absolute;
+    top: -20px;
+    right: -20px;
+    width: 150px;
+    height: 150px;
+    opacity: 0.03;
+    color: var(--text-color);
+    pointer-events: none;
+    z-index: 0;
+    transform: rotate(-15deg);
+  }
+
+  .card-content {
+    position: relative;
+    z-index: 1;
+  }
 }
 
 .card-content {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
   gap: 2rem;
-}
+  padding: 1.5rem;
 
-.left-section {
-  display: flex;
-  align-items: center;
-  gap: 1.5rem;
-  min-width: 280px;
-}
+  .left-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    min-width: 200px;
 
-.avatar-container {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  overflow: hidden;
-  border: 3px solid #2196f3;
-}
+    .avatar-container {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      overflow: hidden;
+      border: 3px solid #2196f3;
+      cursor: pointer; // 添加指针样式
+      transition: all 0.3s ease;
 
-.avatar {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 0.3s ease;
-}
+      &:hover {
+        transform: scale(1.05);
+        box-shadow: 0 0 15px rgba(33, 150, 243, 0.3);
 
-.avatar:hover {
-  transform: scale(1.1);
-}
+        .avatar {
+          transform: scale(1.1);
+        }
+      }
 
-.basic-info {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
+      .avatar {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+      }
+    }
 
-.dev-name {
-  font-size: 1.25rem;
-  margin: 0;
-  color: var(--text-color);
-}
+    .basic-info {
+      text-align: center;
+      width: 100%;
 
-.username-container {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
+      .dev-name {
+        font-size: 1.4rem;
+        margin: 0;
+        color: var(--text-color);
+        word-break: break-word;
+      }
 
-.country-flag {
-  font-size: 1.2rem;
-}
+      .github-username {
+        color: #2196f3;
+        text-decoration: none;
+        font-size: 1rem;
+        display: inline-block;
+        margin-top: 0.5rem;
 
-.github-username {
-  color: #2196f3;
-  text-decoration: none;
-  font-size: 0.9rem;
-}
+        &:hover {
+          text-decoration: underline;
+        }
+      }
 
-.github-username:hover {
-  text-decoration: underline;
-}
+      .location {
+        margin-top: 0.5rem;
+        font-size: 0.9rem;
+        color: var(--text-color);
+        opacity: 0.8;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.3rem;
+      }
+    }
+  }
 
-.center-section {
-  flex: 1;
-  padding: 0 1rem;
-}
+  .center-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
 
-.bio {
-  font-size: 0.9rem;
-  color: var(--text-color);
-  margin: 0;
-  line-height: 1.5;
-}
+    .bio-section {
+      min-height: 60px;
+      display: flex;
+      align-items: flex-start;
+      margin-bottom: 1rem;
 
-.right-section {
-  min-width: 120px;
-  text-align: center;
-}
+      .bio {
+        font-size: 1rem;
+        line-height: 1.6;
+        color: var(--text-color);
+        white-space: pre-line;
+        width: 100%;
+        text-align: left;
 
-.stats {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.5rem;
-}
+        &.empty-bio {
+          color: var(--text-color);
+          opacity: 0.5;
+          font-style: italic;
+          display: flex;
+          align-items: center;
+          height: 60px;
+        }
+      }
+    }
 
-.followers-count {
-  font-size: 1.5rem;
-  font-weight: bold;
-  color: var(--text-color);
-}
+    .user-links {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      min-height: 24px;
 
-.followers-label {
-  font-size: 0.8rem;
-  color: var(--text-color);
+      .link {
+        color: #2196f3;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+        font-size: 0.9rem;
+
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border-color);
+
+      .stat-item {
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+
+        .stat-label {
+          font-size: 1rem;
+          color: var(--text-color);
+          opacity: 0.7;
+          margin-bottom: 0.3rem;
+          width: 100%;
+          text-align: center;
+        }
+
+        .stat-value {
+          font-size: 1.5rem;
+          font-weight: 500;
+          color: var(--text-color);
+          width: 100%;
+          text-align: center;
+        }
+      }
+    }
+  }
 }
 
 /* 骨架屏样式 */
@@ -571,9 +727,6 @@ watch([selectedCountry, () => route.query.keyword], () => {
   font-size: 0.9rem;
   color: var(--text-color);
   font-weight: 500;
-  display: flex;
-  align-items: center;
-  gap: 0.3rem;
 }
 
 .language-dot {
@@ -661,6 +814,42 @@ watch([selectedCountry, () => route.query.keyword], () => {
 
   .score {
     grid-column: span 2;
+  }
+}
+
+.loading-more {
+  padding: 2rem 0;
+  text-align: center;
+  color: var(--text-color);
+}
+
+.loading-spinner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--border-color);
+  border-top-color: #2196f3;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.no-more {
+  text-align: center;
+  padding: 2rem 0;
+  color: var(--text-color);
+  opacity: 0.6;
+  font-size: 0.9rem;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
   }
 }
 </style>

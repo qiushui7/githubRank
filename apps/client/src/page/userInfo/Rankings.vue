@@ -35,10 +35,10 @@
     </template>
 
     <!-- 空状态 -->
-    <template v-else-if="!RepositoriesList.length">
+    <template v-else-if="!hasData">
       <div class="empty-state">
         <div class="empty-icon">📊</div>
-        <div class="empty-message">暂无数据</div>
+        <div class="empty-message">暂无统计数据</div>
       </div>
     </template>
 
@@ -99,6 +99,7 @@ import {
   TooltipComponent,
   LegendComponent,
   GridComponent,
+  GraphicComponent,
 } from 'echarts/components';
 import ClientOnly from '@duannx/vue-client-only';
 import { fetchTopLanguages } from '../../service/github';
@@ -165,17 +166,11 @@ if (import.meta.env.SSR === false) {
     TooltipComponent,
     LegendComponent,
     GridComponent,
+    GraphicComponent,
   ]);
 }
 
 const github_id = computed(() => useRoute().params.id);
-const getTopLanguages = async () => {
-  const res = await fetchTopLanguages(github_id.value as string);
-  languagesData.value = Object.values(res);
-};
-if (typeof window !== 'undefined') {
-  getTopLanguages();
-}
 
 const isDarkTheme = inject<Ref<boolean>>('isDarkTheme', ref(false));
 // 总览数据
@@ -262,92 +257,220 @@ const commonChartConfig = computed(() => ({
   },
 }));
 
-const languagesData = ref<LanguageItem[]>();
+const languagesData = ref<LanguageItem[]>([]);
+const isLanguagesLoading = ref(true);
+
+const getTopLanguages = async () => {
+  try {
+    isLanguagesLoading.value = true;
+    const res = await fetchTopLanguages(github_id.value as string);
+    languagesData.value = Object.values(res);
+  } catch (error) {
+    console.error('Failed to fetch languages:', error);
+  } finally {
+    isLanguagesLoading.value = false;
+  }
+};
+
 // 语言统计图表配置
 const languagesOption = computed(() => {
-  const totalLanguagesSize = languagesData.value?.reduce(
-    (acc, curr) => acc + curr.size,
-    0,
-  );
+  const hasLanguages = languagesData.value?.length > 0;
+  const isLoading = isLanguagesLoading.value;
+
   return {
     ...commonChartConfig.value,
     xAxis: {
       ...commonChartConfig.value.xAxis,
-      data:
-        languagesData.value
-          ?.slice(0, 10)
-          .map((item: LanguageItem) => item.name) || [],
+      data: isLoading
+        ? ['加载中...']
+        : hasLanguages
+          ? languagesData.value.slice(0, 10).map((item) => item.name)
+          : ['暂无数据'],
     },
     series: [
       {
-        data:
-          languagesData.value?.slice(0, 10).map((item: LanguageItem) => {
-            return ((item.size / (totalLanguagesSize as number)) * 100).toFixed(
-              2,
-            );
-          }) || [],
+        data: isLoading
+          ? [0]
+          : hasLanguages
+            ? languagesData.value.slice(0, 10).map((item) => {
+                const totalSize = languagesData.value.reduce(
+                  (acc, curr) => acc + curr.size,
+                  0,
+                );
+                return ((item.size / totalSize) * 100).toFixed(2);
+              })
+            : [0],
         type: 'bar',
         itemStyle: {
           color: '#2196f3',
         },
       },
     ],
+    graphic: isLoading
+      ? [
+          {
+            type: 'text',
+            left: 'center',
+            top: 'middle',
+            style: {
+              text: '加载中...',
+              fill: themeColors.value.textColor,
+              fontSize: 14,
+              opacity: 0.5,
+            },
+            keyframeAnimation: [
+              {
+                duration: 1000,
+                loop: true,
+                keyframes: [
+                  { opacity: 0.2 },
+                  { opacity: 0.8 },
+                  { opacity: 0.2 },
+                ],
+              },
+            ],
+          },
+        ]
+      : !hasLanguages
+        ? [
+            {
+              type: 'text',
+              left: 'center',
+              top: 'middle',
+              style: {
+                text: '暂无语言数据',
+                fill: themeColors.value.textColor,
+                fontSize: 14,
+                opacity: 0.5,
+              },
+            },
+          ]
+        : undefined,
   };
 });
 
 // Issues 排名图表配置
-const issuesOption = computed(() => ({
-  ...commonChartConfig.value,
-  xAxis: {
-    ...commonChartConfig.value.xAxis,
-    data: issuesRanking.value.map((d) => d.name),
-  },
-  series: [
-    {
-      data: issuesRanking.value.map((d) => d.open_issues_count),
-      type: 'bar',
-      itemStyle: {
-        color: '#2196f3',
-      },
+const issuesOption = computed(() => {
+  const hasIssues = issuesRanking.value.some((d) => d.open_issues_count > 0);
+
+  return {
+    ...commonChartConfig.value,
+    xAxis: {
+      ...commonChartConfig.value.xAxis,
+      data: hasIssues
+        ? issuesRanking.value.slice(0, 10).map((d) => d.name)
+        : ['暂无数据'],
     },
-  ],
-}));
+    series: [
+      {
+        data: hasIssues
+          ? issuesRanking.value.slice(0, 10).map((d) => d.open_issues_count)
+          : [0],
+        type: 'bar',
+        itemStyle: {
+          color: '#2196f3',
+        },
+      },
+    ],
+    graphic: !hasIssues
+      ? [
+          {
+            type: 'text',
+            left: 'center',
+            top: 'middle',
+            style: {
+              text: '暂无 Issues 数据',
+              fill: themeColors.value.textColor,
+              fontSize: 14,
+              opacity: 0.5,
+            },
+          },
+        ]
+      : undefined,
+  };
+});
 
 // Forks 排名图表配置
-const forksOption = computed(() => ({
-  ...commonChartConfig.value,
-  xAxis: {
-    ...commonChartConfig.value.xAxis,
-    data: forksRanking.value.map((d) => d.name),
-  },
-  series: [
-    {
-      data: forksRanking.value.map((d) => d.forks_count),
-      type: 'bar',
-      itemStyle: {
-        color: '#2196f3',
-      },
+const forksOption = computed(() => {
+  const hasForks = forksRanking.value.some((d) => d.forks_count > 0);
+
+  return {
+    ...commonChartConfig.value,
+    xAxis: {
+      ...commonChartConfig.value.xAxis,
+      data: hasForks
+        ? forksRanking.value.slice(0, 10).map((d) => d.name)
+        : ['暂无数据'],
     },
-  ],
-}));
+    series: [
+      {
+        data: hasForks
+          ? forksRanking.value.slice(0, 10).map((d) => d.forks_count)
+          : [0],
+        type: 'bar',
+        itemStyle: {
+          color: '#2196f3',
+        },
+      },
+    ],
+    graphic: !hasForks
+      ? [
+          {
+            type: 'text',
+            left: 'center',
+            top: 'middle',
+            style: {
+              text: '暂无 Forks 数据',
+              fill: themeColors.value.textColor,
+              fontSize: 14,
+              opacity: 0.5,
+            },
+          },
+        ]
+      : undefined,
+  };
+});
 
 // Stars 排名图表配置
-const starsOption = computed(() => ({
-  ...commonChartConfig.value,
-  xAxis: {
-    ...commonChartConfig.value.xAxis,
-    data: starsRanking.value.map((d) => d.name),
-  },
-  series: [
-    {
-      data: starsRanking.value.map((d) => d.stargazers_count),
-      type: 'bar',
-      itemStyle: {
-        color: '#2196f3',
-      },
+const starsOption = computed(() => {
+  const hasStars = starsRanking.value.some((d) => d.stargazers_count > 0);
+
+  return {
+    ...commonChartConfig.value,
+    xAxis: {
+      ...commonChartConfig.value.xAxis,
+      data: hasStars
+        ? starsRanking.value.slice(0, 10).map((d) => d.name)
+        : ['暂无数据'],
     },
-  ],
-}));
+    series: [
+      {
+        data: hasStars
+          ? starsRanking.value.slice(0, 10).map((d) => d.stargazers_count)
+          : [0],
+        type: 'bar',
+        itemStyle: {
+          color: '#2196f3',
+        },
+      },
+    ],
+    graphic: !hasStars
+      ? [
+          {
+            type: 'text',
+            left: 'center',
+            top: 'middle',
+            style: {
+              text: '暂无 Stars 数据',
+              fill: themeColors.value.textColor,
+              fontSize: 14,
+              opacity: 0.5,
+            },
+          },
+        ]
+      : undefined,
+  };
+});
 
 const emit = defineEmits<{
   (e: 'update:totalStars', value: number): void;
@@ -379,6 +502,19 @@ const retryLoad = async () => {
   }
 };
 
+const hasData = computed(() => {
+  const hasRepos = RepositoriesList.value.length > 0;
+  const hasLanguages =
+    !isLanguagesLoading.value && languagesData.value?.length > 0;
+  const hasStars = starsRanking.value.some((d) => d.stargazers_count > 0);
+  const hasForks = forksRanking.value.some((d) => d.forks_count > 0);
+  const hasIssues = issuesRanking.value.some((d) => d.open_issues_count > 0);
+
+  return hasRepos || hasLanguages || hasStars || hasForks || hasIssues;
+});
+if (typeof window !== 'undefined') {
+  getTopLanguages();
+}
 // 初始化加载
 onMounted(async () => {
   if (!RepositoriesList.value.length) {
@@ -549,55 +685,61 @@ onMounted(async () => {
 
 // 错误状态样式
 .error-state {
+  height: calc(100vh - 400px);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 100%;
-  gap: 1rem;
+  color: var(--text-color);
 
-  .error-icon {
-    font-size: 3rem;
+  .error-icon,
+  .empty-icon {
+    font-size: 4rem;
+    margin-bottom: 1.5rem;
+    opacity: 0.5;
   }
 
-  .error-message {
-    color: var(--text-color);
-    font-size: 1.1rem;
-  }
-
-  .retry-button {
-    padding: 0.5rem 1.5rem;
-    border: none;
-    border-radius: 8px;
-    background: #2196f3;
-    color: white;
-    cursor: pointer;
-    transition: all 0.3s ease;
-
-    &:hover {
-      background: #1976d2;
-    }
+  .error-message,
+  .empty-message {
+    font-size: 1.2rem;
+    opacity: 0.7;
+    margin-bottom: 1rem;
   }
 }
 
 // 空状态样式
 .empty-state {
+  height: calc(100vh - 400px);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 100%;
-  gap: 1rem;
+  color: var(--text-color);
 
   .empty-icon {
-    font-size: 3rem;
+    font-size: 4rem;
+    margin-bottom: 1.5rem;
     opacity: 0.5;
   }
 
   .empty-message {
-    color: var(--text-color);
-    font-size: 1.1rem;
+    font-size: 1.2rem;
     opacity: 0.7;
+    margin-bottom: 1rem;
+  }
+}
+
+.retry-button {
+  padding: 0.5rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  background: #2196f3;
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background: #1976d2;
   }
 }
 </style>

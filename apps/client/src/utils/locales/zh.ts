@@ -14,6 +14,9 @@ export default {
     },
     followers: '关注者',
   },
+  search: {
+    all: '所有国家',
+  },
   common: {
     loading: '加载中...',
     error: '出错了',
@@ -50,5 +53,14 @@ export default {
   summary: {
     title: 'AI 生成的总结',
     generated_at: '生成于',
+  },
+  auth: {
+    processing: '正在处理 GitHub 登录...',
+  },
+  empty: {
+    repositories: '暂无仓库',
+    repositories_subtext: '该用户还没有创建过仓库',
+    issues: '暂无问题',
+    issues_subtext: '该用户还没有创建过问题',
   },
 };

@@ -12,10 +12,23 @@ export class ProxyMiddleware implements NestMiddleware {
     pathRewrite: {
       '^/service': '', // 移除 /service 前缀
     },
+    on: {
+      proxyReq: (proxyReq, req: Request & { body: any }, res) => {
+        if (req.method === 'POST' && req.body) {
+          const bodyData = JSON.stringify(req.body);
+          proxyReq.setHeader('Content-Length', Buffer.byteLength(bodyData));
+          proxyReq.write(bodyData);
+        }
+      },
+      error: (err, req, res) => {
+        console.error('Proxy Error:', err);
+      },
+    },
   });
 
   use(req: Request, res: Response, next: NextFunction) {
     if (req.path.startsWith('/service')) {
+      console.log('ProxyMiddleware', req.body);
       return this.proxy(req, res, next);
     }
     next();

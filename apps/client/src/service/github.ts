@@ -82,18 +82,6 @@ const fetcher = (variables: any) => {
   );
 };
 
-const logger = {
-  error: (message: any) => console.error(message),
-};
-
-const wrapTextMultiline = (
-  text: string,
-  width: number,
-  indent: number,
-): string[] => {
-  return text.match(new RegExp(`.{1,${width}}`, 'g')) || [text];
-};
-
 const fetchTopLanguages = async (
   username: string,
   exclude_repo: string[] = [],
@@ -107,19 +95,6 @@ const fetchTopLanguages = async (
   const res = await fetcher({ login: username });
 
   if (res.data.errors) {
-    logger.error(res.data.errors);
-    if (res.data.errors[0].type === 'NOT_FOUND') {
-      throw new CustomError(
-        res.data.errors[0].message || 'Could not fetch user.',
-        CustomError.USER_NOT_FOUND,
-      );
-    }
-    if (res.data.errors[0].message) {
-      throw new CustomError(
-        wrapTextMultiline(res.data.errors[0].message, 90, 1)[0],
-        res.statusText,
-      );
-    }
     throw new CustomError(
       'Something went wrong while trying to retrieve the language data using the GraphQL API.',
       CustomError.GRAPHQL_ERROR,
