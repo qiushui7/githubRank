@@ -4,6 +4,8 @@ import { checkGitHubToken } from '../service/auth';
 
 export const USER_INFO_KEY = 'user_info';
 
+import { Tech } from '../service/search';
+
 export const setCookie = (key: string, value: string) => {
   Cookies.set(key, value, {
     expires: 7, // 7天后过期
@@ -34,6 +36,7 @@ export const createAuthStore = () => {
     avatar_url: '',
     login: '',
   });
+  const techStack = ref<Tech[]>([]);
 
   const checkAuthStatus = async () => {
     isAuth.value = await isAuthenticated();
@@ -48,6 +51,10 @@ export const createAuthStore = () => {
     userInfo.value = data;
   };
 
+  const updateTechStack = (data: Tech[]) => {
+    techStack.value = data;
+  };
+
   const clearAuth = () => {
     removeCookie(USER_INFO_KEY);
     isAuth.value = false;
@@ -60,6 +67,8 @@ export const createAuthStore = () => {
     updateAuth,
     clearAuth,
     checkAuthStatus,
+    techStack: readonly(techStack),
+    updateTechStack,
   };
 };
 

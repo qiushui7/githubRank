@@ -14,6 +14,9 @@ export default {
     },
     followers: 'Followers',
   },
+  search: {
+    all: 'All Countries',
+  },
   common: {
     loading: 'Loading...',
     error: 'Error occurred',

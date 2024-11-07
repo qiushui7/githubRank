@@ -14,6 +14,9 @@ export default {
     },
     followers: '关注者',
   },
+  search: {
+    all: '所有国家',
+  },
   common: {
     loading: '加载中...',
     error: '出错了',

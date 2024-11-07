@@ -23,7 +23,11 @@ import { onMounted, inject } from 'vue';
 import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import type { AuthStore } from '../utils/useAuthStore';
-import { getUserInfo, getUserRepositories } from '../service/userInfo';
+import {
+  getUserInfo,
+  getUserRepositories,
+  getUserTechStack,
+} from '../service/userInfo';
 
 const { t } = useI18n();
 const router = useRouter();
@@ -46,10 +50,12 @@ onMounted(async () => {
         const userInfo = data.user;
         userInfo.access_token = data.access_token;
         await authStore.updateAuth(userInfo);
-        requestIdleCallback(() => {
+        requestIdleCallback(async () => {
           if (authStore.isAuth) {
             getUserInfo(authStore.userInfo.value.login);
             getUserRepositories(authStore.userInfo.value.login);
+            const res = await getUserTechStack(authStore.userInfo.value.login);
+            authStore.updateTechStack(res.data.techs);
           }
         });
         router.push('/');

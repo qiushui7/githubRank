@@ -99,6 +99,7 @@ import {
   TooltipComponent,
   LegendComponent,
   GridComponent,
+  GraphicComponent,
 } from 'echarts/components';
 import ClientOnly from '@duannx/vue-client-only';
 import { fetchTopLanguages } from '../../service/github';
@@ -165,17 +166,11 @@ if (import.meta.env.SSR === false) {
     TooltipComponent,
     LegendComponent,
     GridComponent,
+    GraphicComponent,
   ]);
 }
 
 const github_id = computed(() => useRoute().params.id);
-const getTopLanguages = async () => {
-  const res = await fetchTopLanguages(github_id.value as string);
-  languagesData.value = Object.values(res);
-};
-if (typeof window !== 'undefined') {
-  getTopLanguages();
-}
 
 const isDarkTheme = inject<Ref<boolean>>('isDarkTheme', ref(false));
 // 总览数据
@@ -263,50 +258,94 @@ const commonChartConfig = computed(() => ({
 }));
 
 const languagesData = ref<LanguageItem[]>([]);
+const isLanguagesLoading = ref(true);
+
+const getTopLanguages = async () => {
+  try {
+    isLanguagesLoading.value = true;
+    const res = await fetchTopLanguages(github_id.value as string);
+    languagesData.value = Object.values(res);
+  } catch (error) {
+    console.error('Failed to fetch languages:', error);
+  } finally {
+    isLanguagesLoading.value = false;
+  }
+};
+
 // 语言统计图表配置
 const languagesOption = computed(() => {
   const hasLanguages = languagesData.value?.length > 0;
+  const isLoading = isLanguagesLoading.value;
 
   return {
     ...commonChartConfig.value,
     xAxis: {
       ...commonChartConfig.value.xAxis,
-      data: hasLanguages
-        ? languagesData.value.slice(0, 10).map((item) => item.name)
-        : ['暂无数据'],
+      data: isLoading
+        ? ['加载中...']
+        : hasLanguages
+          ? languagesData.value.slice(0, 10).map((item) => item.name)
+          : ['暂无数据'],
     },
     series: [
       {
-        data: hasLanguages
-          ? languagesData.value.slice(0, 10).map((item) => {
-              const totalSize = languagesData.value.reduce(
-                (acc, curr) => acc + curr.size,
-                0,
-              );
-              return ((item.size / totalSize) * 100).toFixed(2);
-            })
-          : [0],
+        data: isLoading
+          ? [0]
+          : hasLanguages
+            ? languagesData.value.slice(0, 10).map((item) => {
+                const totalSize = languagesData.value.reduce(
+                  (acc, curr) => acc + curr.size,
+                  0,
+                );
+                return ((item.size / totalSize) * 100).toFixed(2);
+              })
+            : [0],
         type: 'bar',
         itemStyle: {
           color: '#2196f3',
         },
       },
     ],
-    graphic: !hasLanguages
+    graphic: isLoading
       ? [
           {
             type: 'text',
             left: 'center',
             top: 'middle',
             style: {
-              text: '暂无语言数据',
+              text: '加载中...',
               fill: themeColors.value.textColor,
               fontSize: 14,
               opacity: 0.5,
             },
+            keyframeAnimation: [
+              {
+                duration: 1000,
+                loop: true,
+                keyframes: [
+                  { opacity: 0.2 },
+                  { opacity: 0.8 },
+                  { opacity: 0.2 },
+                ],
+              },
+            ],
           },
         ]
-      : undefined,
+      : !hasLanguages
+        ? [
+            {
+              type: 'text',
+              left: 'center',
+              top: 'middle',
+              style: {
+                text: '暂无语言数据',
+                fill: themeColors.value.textColor,
+                fontSize: 14,
+                opacity: 0.5,
+              },
+            },
+          ]
+        : undefined,
   };
 });
 
@@ -463,6 +502,19 @@ const retryLoad = async () => {
   }
 };
 
+const hasData = computed(() => {
+  const hasRepos = RepositoriesList.value.length > 0;
+  const hasLanguages =
+    !isLanguagesLoading.value && languagesData.value?.length > 0;
+  const hasStars = starsRanking.value.some((d) => d.stargazers_count > 0);
+  const hasForks = forksRanking.value.some((d) => d.forks_count > 0);
+  const hasIssues = issuesRanking.value.some((d) => d.open_issues_count > 0);
+
+  return hasRepos || hasLanguages || hasStars || hasForks || hasIssues;
+});
+if (typeof window !== 'undefined') {
+  getTopLanguages();
+}
 // 初始化加载
 onMounted(async () => {
   if (!RepositoriesList.value.length) {
@@ -470,16 +522,6 @@ onMounted(async () => {
   } else {
     isLoading.value = false;
   }
-});
-
-const hasData = computed(() => {
-  const hasRepos = RepositoriesList.value.length > 0;
-  const hasLanguages = languagesData.value?.length > 0;
-  const hasStars = starsRanking.value.some((d) => d.stargazers_count > 0);
-  const hasForks = forksRanking.value.some((d) => d.forks_count > 0);
-  const hasIssues = issuesRanking.value.some((d) => d.open_issues_count > 0);
-
-  return hasRepos || hasLanguages || hasStars || hasForks || hasIssues;
 });
 </script>
 

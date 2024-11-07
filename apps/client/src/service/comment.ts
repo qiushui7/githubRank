@@ -1,4 +1,3 @@
-import { getCookie } from '../utils/useAuthStore';
 import service from './index';
 
 export const getComments = async (

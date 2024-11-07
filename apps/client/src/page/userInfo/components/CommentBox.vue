@@ -38,22 +38,27 @@
     <div class="comments-list">
       <template v-if="comments.length > 0">
         <div v-for="comment in comments" :key="comment.id" class="comment-item">
-          <div class="comment-avatar">
+          <div class="comment-avatar" @click="navigateToUser(comment.username)">
             <img :src="comment.avatar_url" :alt="comment.username" />
           </div>
           <div class="comment-content">
             <div class="comment-header">
               <div class="user-info">
-                <span class="comment-username">{{ comment.username }}</span>
+                <span
+                  class="comment-username"
+                  @click="navigateToUser(comment.username)"
+                >
+                  {{ comment.username }}
+                </span>
                 <StarRating
                   :model-value="comment.rating"
                   disabled
                   class="comment-rating"
                 />
               </div>
-              <span class="comment-time">{{
-                formatTime(comment.created_at)
-              }}</span>
+              <span class="comment-time">
+                {{ formatTime(comment.created_at) }}
+              </span>
             </div>
             <div class="comment-text">{{ comment.message }}</div>
           </div>
@@ -77,6 +82,7 @@ import StarRating from './StarRating.vue';
 import { formatDistanceToNow } from 'date-fns';
 import { zhCN, enUS } from 'date-fns/locale';
 import { createComment } from '../../../service/comment';
+import { useRouter } from 'vue-router';
 
 const { t, locale } = useI18n();
 
@@ -91,6 +97,12 @@ const emit = defineEmits(['handlePageChange']);
 const commentText = ref('');
 
 const rating = ref(0);
+
+const router = useRouter();
+
+const navigateToUser = (username: string) => {
+  router.push(`/userInfo/${username}`);
+};
 
 const formatTime = (time: string) => {
   const locales: Record<'zh' | 'en', any> = {
@@ -238,16 +250,31 @@ const handleSubmit = async () => {
         border-radius: 50%;
         overflow: hidden;
         border: 2px solid var(--border-color);
+        cursor: pointer;
+        transition: all 0.3s ease;
+
+        &:hover {
+          border-color: #2196f3;
+          transform: scale(1.05);
+        }
 
         img {
           width: 100%;
           height: 100%;
           object-fit: cover;
-          transition: transform 0.3s ease;
+        }
+      }
 
-          &:hover {
-            transform: scale(1.1);
-          }
+      .comment-username {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--text-color);
+        cursor: pointer;
+        transition: color 0.3s ease;
+
+        &:hover {
+          color: #2196f3;
+          text-decoration: underline;
         }
       }
 

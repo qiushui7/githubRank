@@ -38,7 +38,11 @@ import Score from './Score.vue';
 import Repositories from './Repositories.vue';
 import LatestIssues from './LatestIssues.vue';
 import { useRoute, useRouter } from 'vue-router';
-import { getUserInfo, guessNation } from '../../service/userInfo';
+import {
+  getUserInfo,
+  guessNation,
+  getUserTechStack,
+} from '../../service/userInfo';
 import type { PreloadStore } from '../../utils/preload';
 
 interface UserInfo {
@@ -119,6 +123,11 @@ onBeforeMount(async () => {
     !userInfo.value.location
   ) {
     requestGuessNation();
+  }
+  if (typeof window !== 'undefined') {
+    requestIdleCallback(() => {
+      getUserTechStack(github_id.value);
+    });
   }
 });
 
