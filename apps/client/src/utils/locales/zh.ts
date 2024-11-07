@@ -16,6 +16,7 @@ export default {
   },
   search: {
     all: '所有国家',
+    result: '搜索结果',
   },
   common: {
     loading: '加载中...',

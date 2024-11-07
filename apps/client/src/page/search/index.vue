@@ -1,7 +1,7 @@
 <template>
   <div class="search-container">
     <div class="search-header">
-      <h1 class="title">搜索结果: "{{ keyword }}"</h1>
+      <h1 class="title">{{ t('search.result') }}: "{{ keyword }}"</h1>
       <div class="filter-section">
         <select v-model="selectedCountry" class="country-filter">
           <option value="">{{ t('search.all') }}</option>
