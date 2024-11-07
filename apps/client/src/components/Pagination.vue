@@ -139,7 +139,6 @@ const handleJump = () => {
   justify-content: center;
   align-items: center;
   gap: 1rem;
-  margin-bottom: 2rem;
   padding: 1rem 0;
 }
 

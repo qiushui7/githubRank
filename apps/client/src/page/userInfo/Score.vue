@@ -34,10 +34,6 @@
         :comments="commentResponse.list"
         @handlePageChange="handlePageChange"
       />
-    </div>
-
-    <!-- 添加分页器 -->
-    <div class="pagination-container">
       <Pagination v-model:currentPage="currentPage" :totalPages="totalPages" />
     </div>
   </div>
@@ -91,8 +87,17 @@ const totalPages = computed(() => {
 
 const handlePageChange = async (page: number) => {
   currentPage.value = page;
-  const res = await getComments(props.github_id);
+  const res = await getComments(props.github_id, page);
   commentResponse.value = res.data;
+
+  // 平滑滚动到顶部
+  const contentElement = document.querySelector('.score-container-content');
+  if (contentElement) {
+    contentElement.scrollTo({
+      top: 0,
+      behavior: 'smooth',
+    });
+  }
 };
 
 watch(
@@ -135,6 +140,29 @@ watch(
     margin-top: 30px;
     height: 70%;
     width: 100%;
+    overflow-y: auto; // 确保内容可滚动
+    scroll-behavior: smooth; // 添加平滑滚动
+
+    // 自定义滚动条样式
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: transparent;
+      border-radius: 3px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: var(--border-color);
+      border-radius: 3px;
+      border: 2px solid transparent;
+      background-clip: padding-box;
+
+      &:hover {
+        background: #2196f3;
+      }
+    }
   }
 }
 </style>

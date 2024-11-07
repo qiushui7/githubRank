@@ -140,7 +140,8 @@ const handleSubmit = async () => {
 <style lang="less" scoped>
 .comment-box {
   width: 100%;
-  margin: 2rem 0;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
 
   .comment-input-container {
     display: flex;

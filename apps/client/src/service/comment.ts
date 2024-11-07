@@ -3,10 +3,10 @@ import service from './index';
 export const getComments = async (
   github_id: string,
   curpage = 1,
-  pageSize = 10,
+  pagesize = 5,
 ) => {
   return service.get('/user/getAppraise', {
-    params: { github_id, curpage, pageSize },
+    params: { github_id, curpage, pagesize },
   });
 };
 
